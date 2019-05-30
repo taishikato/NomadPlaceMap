@@ -1,67 +1,36 @@
 <template>
   <section class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        HangoutMap
-      </h1>
-      <h2 class="subtitle">
-        Cloud source map for tourists
-      </h2>
-      <div class="links">
-        <a href="https://nuxtjs.org/" target="_blank" class="button--green"
-          >Documentation</a
-        >
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-          >GitHub</a
-        >
-      </div>
-    </div>
+    <div id="map"></div>
   </section>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js'
 
 export default {
-  components: {
-    Logo
+  mounted() {
+    mapboxgl.accessToken =
+      'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw'
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
+      center: [-123.116226, 49.246292],
+      zoom: 10.7
+    })
+    return map
   }
 }
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+body {
+  margin: 0;
+  padding: 0;
 }
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
 </style>
