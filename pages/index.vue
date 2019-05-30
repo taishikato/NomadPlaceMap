@@ -1,7 +1,6 @@
 <template>
   <section class="container">
     <div id="map"></div>
-    {{ lngLat }}
   </section>
 </template>
 
@@ -11,11 +10,6 @@ import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 
 export default {
-  data() {
-    return {
-      lngLat: ''
-    }
-  },
   mounted() {
     mapboxgl.accessToken =
       'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw'
@@ -25,9 +19,9 @@ export default {
       center: [-123.116226, 49.246292],
       zoom: 12
     })
-    map.on('click', e => {
+    map.on('dblclick', e => {
       const lngLat = JSON.stringify(e.lngLat)
-      this.lngLat = lngLat
+      console.log(lngLat)
     })
     const marker = new mapboxgl.Marker() // initialize a new marker
       .setLngLat([-123.116226, 49.246292]) // Marker [lng, lat] coordinates
