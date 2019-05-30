@@ -1,6 +1,7 @@
 <template>
   <section class="container">
     <div id="map"></div>
+    {{ lngLat }}
   </section>
 </template>
 
@@ -8,6 +9,11 @@
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js'
 
 export default {
+  data() {
+    return {
+      lngLat: ''
+    }
+  },
   mounted() {
     mapboxgl.accessToken =
       'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw'
@@ -17,7 +23,10 @@ export default {
       center: [-123.116226, 49.246292],
       zoom: 10.7
     })
-    return map
+    map.on('click', e => {
+      const lngLat = JSON.stringify(e.lngLat)
+      this.lngLat = lngLat
+    })
   }
 }
 </script>
@@ -28,9 +37,11 @@ body {
   padding: 0;
 }
 #map {
-  position: absolute;
+  width: 600px;
+  height: 500px;
+  /* position: absolute;
   top: 0;
   bottom: 0;
-  width: 100%;
+  width: 100%; */
 }
 </style>
