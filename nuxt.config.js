@@ -23,6 +23,11 @@ export default {
         rel: 'stylesheet',
         href:
           'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap'
       }
     ]
   },
@@ -35,7 +40,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['@/assets/css/main'],
 
   /*
    ** Plugins to load before mounting the App
