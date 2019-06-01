@@ -1,6 +1,33 @@
 <template>
-  <section class="container">
+  <section>
     <div id="map"></div>
+
+    <b-modal :active.sync="isImageModalActive">
+      <div id="model-box">
+        <h3 class="title">Add This Place??</h3>
+        <!-- {{ addingData }} -->
+        <div class="field">
+          <div class="control">
+            <h4 class="title is-4">{{ addingData.text_en }}</h4>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            {{ addingData.properties.address }}
+          </div>
+        </div>
+        <div class="field is-grouped">
+          <div class="control">
+            <a class="button is-primary">Add</a>
+          </div>
+          <div class="control">
+            <button class="button is-text" @click="closeModel">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </b-modal>
   </section>
 </template>
 
@@ -12,7 +39,11 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 export default {
   data() {
     return {
-      city: 'Vancouver'
+      city: 'Vancouver',
+      isImageModalActive: false,
+      addingData: {
+        properties: {}
+      }
     }
   },
   mounted() {
@@ -40,7 +71,8 @@ export default {
         longitude: -123.116226,
         latitude: 49.246292
       },
-      limit: 10
+      limit: 10,
+      language: 'en'
     })
     map.addControl(geocoder)
 
@@ -68,14 +100,21 @@ export default {
       //  Add a marker at the result's coordinates
       geocoder.on('result', e => {
         console.log(e)
+        this.isImageModalActive = true
+        this.addingData = e.result
         map.getSource('single-point').setData(e.result.geometry)
       })
     })
+  },
+  methods: {
+    closeModel() {
+      this.isImageModalActive = false
+    }
   }
 }
 </script>
 
-<style>
+<style scoped lang="scss">
 body {
   margin: 0;
   padding: 0;
@@ -87,5 +126,13 @@ body {
   top: 0;
   bottom: 0;
   width: 100%;
+}
+.container {
+  height: 100%;
+}
+#model-box {
+  padding: 10px;
+  border-radius: 7px;
+  background-color: white;
 }
 </style>

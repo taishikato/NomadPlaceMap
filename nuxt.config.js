@@ -40,7 +40,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['@/assets/css/reset', '@/assets/css/main'],
+  css: ['@/assets/css/bulma', '@/assets/css/main'],
 
   /*
    ** Plugins to load before mounting the App
@@ -50,7 +50,7 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa'],
+  modules: ['nuxt-buefy', '@nuxtjs/pwa'],
 
   /*
    ** Build configuration
