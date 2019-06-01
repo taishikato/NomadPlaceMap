@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       searchQuery: '',
-      cities: [{ name: 'Vancouver' }, { name: 'San Fransisco' }]
+      cities: [{ name: '🌳Vancouver' }, { name: 'San Fransisco' }]
     }
   }
 }
@@ -54,6 +54,7 @@ export default {
   box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
   select {
     border: 0;
+    height: 100%;
   }
 }
 </style>
