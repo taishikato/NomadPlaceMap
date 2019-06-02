@@ -56,6 +56,7 @@
 <script>
 /* eslint-disable no-console,no-unused-vars */
 import getUnixTime from '~/plugins/getUnixTime'
+import asyncForEach from '~/plugins/asyncForEach'
 
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
@@ -73,6 +74,13 @@ export default {
       requestedCity: 'vancouver',
       mapBoxAccessToken:
         'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw',
+      cityName: '🌳Vancouver',
+      isImageModalActive: false,
+      showAddingPlaceButton: true,
+      addingData: {
+        properties: {}
+      },
+      marks: [],
       cities: {
         vancouver: {
           name: '🌳Vancouver',
@@ -98,12 +106,6 @@ export default {
             longitude: 40.758896
           }
         }
-      },
-      cityName: '🌳Vancouver',
-      isImageModalActive: false,
-      showAddingPlaceButton: true,
-      addingData: {
-        properties: {}
       }
     }
   },
@@ -111,10 +113,17 @@ export default {
     this.requestedCity = this.$route.params.id
     this.cityName = this.cities[this.requestedCity].name
   },
-  mounted() {
+  async mounted() {
     const latitude = this.cities[this.requestedCity].coordinates.latitude
     const longitude = this.cities[this.requestedCity].coordinates.longitude
-    this.createMap(latitude, longitude)
+    const map = this.createMap(latitude, longitude)
+
+    // Get data from Firestore to add marks
+    const placeData = await firestore.collection('places').get()
+    await asyncForEach(placeData.docs, doc => {
+      this.marks.push(doc.data())
+    })
+    this.addMarks(map)
   },
   methods: {
     createMap(latitude, longitude) {
@@ -129,9 +138,6 @@ export default {
         const lngLat = JSON.stringify(e.lngLat)
         console.log(lngLat)
       })
-      const marker = new mapboxgl.Marker() // initialize a new marker
-        .setLngLat([latitude, longitude]) // Marker [lng, lat] coordinates
-        .addTo(map) // Add the marker to the map
       const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken, // Set the access token
         mapboxgl: mapboxgl, // Set the mapbox-gl instance
@@ -174,6 +180,7 @@ export default {
           map.getSource('single-point').setData(e.result.geometry)
         })
       })
+      return map
     },
     closeModel() {
       this.isImageModalActive = false
@@ -214,6 +221,13 @@ export default {
         .collection('places')
         .doc(id)
         .set(data)
+    },
+    addMarks(map) {
+      this.marks.forEach(mark => {
+        new mapboxgl.Marker()
+          .setLngLat([mark.coordinates.latitude, mark.coordinates.longitude])
+          .addTo(map)
+      })
     }
   }
 }
