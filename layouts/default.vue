@@ -2,11 +2,48 @@
   <div class="layout-container">
     <h1 class="title is-product-color">
       <n-link to="/">
-        🚶HangoutMap
+        🚶
       </n-link>
     </h1>
 
     <nuxt style="z-index: 100;" />
+
+    <nav
+      class="navbar is-fixed-bottom"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="navbar-brand">
+        <n-link class="navbar-item" to="/">
+          🚶
+        </n-link>
+        <a
+          role="button"
+          class="navbar-burger burger"
+          aria-label="menu"
+          aria-expanded="false"
+          data-target="navbarBasicExample"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item">
+            Home
+          </a>
+        </div>
+        <div class="navbar-end">
+          <div class="navbar-item">
+            <a>
+              FeedBack
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
   </div>
 </template>
 

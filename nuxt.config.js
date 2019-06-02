@@ -7,6 +7,10 @@ export default {
    ** Headers of the page
    */
   head: {
+    htmlAttrs: {
+      class: 'has-navbar-fixed-top',
+      lang: 'en'
+    },
     title: pkg.name,
     meta: [
       { charset: 'utf-8' },

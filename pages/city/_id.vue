@@ -132,7 +132,7 @@ export default {
         container: 'map',
         style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
         center: [latitude, longitude],
-        zoom: 12
+        zoom: 11
       })
       map.on('dblclick', e => {
         const lngLat = JSON.stringify(e.lngLat)
@@ -226,6 +226,9 @@ export default {
       this.marks.forEach(mark => {
         new mapboxgl.Marker()
           .setLngLat([mark.coordinates.latitude, mark.coordinates.longitude])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 }).setHTML(`<h3>${mark.name}</h3>`)
+          )
           .addTo(map)
       })
     }
@@ -258,7 +261,7 @@ body {
 #add-box-trigger {
   position: absolute;
   top: 10px;
-  right: 100px;
+  right: 50px;
   z-index: 200;
   height: 50px;
   font-weight: 900;
@@ -273,7 +276,7 @@ body {
 .select {
   position: absolute;
   top: 10px;
-  left: 300px;
+  left: 130px;
   height: 50px;
   select {
     border: 0;
