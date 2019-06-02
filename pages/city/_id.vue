@@ -40,7 +40,7 @@
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <a class="button is-primary">Add</a>
+            <a class="button is-primary" @click.prevent="savePlaceData">Add</a>
           </div>
           <div class="control">
             <button class="button is-text" @click="closeModel">
@@ -55,10 +55,19 @@
 
 <script>
 /* eslint-disable no-console,no-unused-vars */
+import getUnixTime from '~/plugins/getUnixTime'
+
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl.js'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
+import uuid from 'uuid/v4'
+
+import firebase from '~/plugins/firebase'
+// Use firestore
+import 'firebase/firestore'
+const firestore = firebase.firestore()
 
 export default {
+  name: 'CityId',
   data() {
     return {
       requestedCity: 'vancouver',
@@ -160,7 +169,6 @@ export default {
         // `result` event is triggered when a user makes a selection
         //  Add a marker at the result's coordinates
         geocoder.on('result', e => {
-          console.log(e)
           this.isImageModalActive = true
           this.addingData = e.result
           map.getSource('single-point').setData(e.result.geometry)
@@ -179,6 +187,33 @@ export default {
     changeCity(event) {
       this.cityName = this.cities[event.target.value].name
       this.$router.push(`./${event.target.value}`)
+    },
+    async savePlaceData() {
+      const id = uuid()
+        .split('-')
+        .join('')
+      await this.saveOnFirestore(id, {
+        id,
+        name: this.addingData.text_en,
+        address: this.addingData.properties.address,
+        coordinates: {
+          latitude: this.addingData.geometry.coordinates[0],
+          longitude: this.addingData.geometry.coordinates[1]
+        }
+      })
+      this.$toast.open({
+        message: 'Yes! Successfuly saved this place 😚',
+        type: 'is-success',
+        duration: 3000
+      })
+      this.closeModel()
+    },
+    async saveOnFirestore(id, data) {
+      const created = getUnixTime()
+      await firestore
+        .collection('places')
+        .doc(id)
+        .set(data)
     }
   }
 }
