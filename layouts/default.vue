@@ -1,17 +1,10 @@
 <template>
   <div class="layout-container">
-    <h1 class="title">
+    <h1 class="title is-product-color">
       <n-link to="/">
-        HangoutMap
+        🚶HangoutMap
       </n-link>
     </h1>
-    <div class="select" style="z-index: 200;">
-      <select>
-        <option v-for="city in cities" :key="city.name" :value="city.name">
-          {{ city.name }}
-        </option>
-      </select>
-    </div>
 
     <nuxt style="z-index: 100;" />
   </div>
@@ -19,18 +12,23 @@
 
 <script>
 /* eslint-disable no-console */
+
+import twemoji from 'twemoji'
 export default {
   data() {
     return {
-      searchQuery: '',
-      cities: [{ name: '🌳Vancouver' }, { name: 'San Fransisco' }]
+      searchQuery: ''
     }
+  },
+  mounted() {
+    twemoji.parse(document.body)
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .title {
+  height: 50px;
   font-size: 30px;
   font-weight: bold;
   position: absolute;
@@ -41,20 +39,11 @@ export default {
   padding: 10px;
   border-radius: 4px;
   background-color: hsl(348, 100%, 61%);
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
   a {
-    color: white;
-  }
-}
-.select {
-  position: absolute;
-  top: 10px;
-  left: 300px;
-  height: 50px;
-  box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
-  select {
-    border: 0;
-    height: 100%;
+    font-weight: 900;
+    &:hover {
+      color: #fff;
+    }
   }
 }
 </style>

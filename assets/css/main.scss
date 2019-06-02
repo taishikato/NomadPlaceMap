@@ -9,3 +9,40 @@ body,
 .layout-container {
     height: 100%;
 }
+
+.is-product-color {
+    color: white;
+    background-color: #f1591f;
+    * {
+        color: white;
+    }
+}
+
+.button.is-product-color.is-outlined {
+    background-color: white;
+    border-color: white;
+    color: #f1591f;
+    &:hover {
+        background-color: #f1591f;
+        border-color: #f1591f;
+        color: white;
+    }
+}
+
+img.emoji {
+    height: 1em;
+    width: 1em;
+//   margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+}
+
+.mapboxgl-control-container {
+    .mapboxgl-ctrl-top-right {
+        display: none;
+    }
+}
+
+.nav-menu-enclosure {
+    // box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid #e8e0e0 !important;
+}
