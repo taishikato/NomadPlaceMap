@@ -39,6 +39,11 @@
             By Taishi
           </a>
           <div class="navbar-item">
+            <a @click.prevent="emailPasswordLogin">
+              Sign Up with Email and Password
+            </a>
+          </div>
+          <div class="navbar-item">
             <a @click.prevent="googleSignin">Sign Up with Google</a>
           </div>
           <div class="navbar-item">
@@ -76,6 +81,15 @@ export default {
     twemoji.parse(document.body)
   },
   methods: {
+    async emailPasswordLogin() {
+      console.log('emailPasswordLogin')
+      const email = 'taishi.k0903@gmail.com'
+      const password = '000011'
+      const result = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+      console.log(result)
+    },
     googleSignin() {
       firebase.auth().signInWithRedirect(googleProvider)
     },
