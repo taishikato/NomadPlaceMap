@@ -39,6 +39,9 @@
             By Taishi
           </a>
           <div class="navbar-item">
+            <a @click.prevent="googleSignin">Sign Up with Google</a>
+          </div>
+          <div class="navbar-item">
             <a @click.prevent="facebookSignin">Sign Up with Facebook</a>
           </div>
         </div>
@@ -60,6 +63,7 @@
 import twemoji from 'twemoji'
 import firebase from '~/plugins/firebase'
 
+const googleProvider = new firebase.auth.GoogleAuthProvider()
 const facebookProvider = new firebase.auth.FacebookAuthProvider()
 
 export default {
@@ -72,8 +76,10 @@ export default {
     twemoji.parse(document.body)
   },
   methods: {
+    googleSignin() {
+      firebase.auth().signInWithRedirect(googleProvider)
+    },
     facebookSignin() {
-      console.log('facebookSignin')
       firebase.auth().signInWithRedirect(facebookProvider)
     }
   }
