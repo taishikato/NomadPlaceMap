@@ -88,7 +88,13 @@ export default {
           coordinates: {
             latitude: -123.1223953278889,
             longitude: 49.28159210931116
-          }
+          },
+          bbox: [
+            -124.73377190858307,
+            48.431278295951216,
+            -122.03503339171422,
+            50.264092205061246
+          ]
         },
         sanfrancisco: {
           name: '🌁San Francisco',
@@ -96,7 +102,13 @@ export default {
           coordinates: {
             latitude: -122.431297,
             longitude: 37.773972
-          }
+          },
+          bbox: [
+            -123.30585393709464,
+            37.12022901968248,
+            -121.6850324171728,
+            38.32014665909986
+          ]
         },
         newyork: {
           name: '🗽New York',
@@ -104,7 +116,13 @@ export default {
           coordinates: {
             latitude: -73.98513,
             longitude: 40.758896
-          }
+          },
+          bbox: [
+            -74.46734390200874,
+            40.59756976679208,
+            -73.5776787636901,
+            41.07067932385931
+          ]
         }
       }
     }
@@ -143,6 +161,7 @@ export default {
         mapboxgl: mapboxgl, // Set the mapbox-gl instance
         marker: false, // Do not use the default marker style
         placeholder: `Search for places in ${this.cityName}`,
+        bbox: this.cities[this.requestedCity].bbox,
         proximity: {
           latitude,
           longitude
