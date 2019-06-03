@@ -31,8 +31,12 @@
       </div>
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item">
-            Home
+          <a
+            href="https://taishikato.com/?ref=hangoutmap"
+            class="navbar-item"
+            target="_blank"
+          >
+            By Taishi
           </a>
         </div>
         <div class="navbar-end">
@@ -82,5 +86,9 @@ export default {
       color: #fff;
     }
   }
+}
+
+#makerwidget {
+  z-index: 200;
 }
 </style>
