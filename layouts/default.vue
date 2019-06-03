@@ -38,6 +38,9 @@
           >
             By Taishi
           </a>
+          <div class="navbar-item">
+            <a @click.prevent="facebookSignin">Sign Up with Facebook</a>
+          </div>
         </div>
         <div class="navbar-end">
           <div class="navbar-item">
@@ -55,6 +58,10 @@
 /* eslint-disable no-console */
 
 import twemoji from 'twemoji'
+import firebase from '~/plugins/firebase'
+
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
+
 export default {
   data() {
     return {
@@ -63,6 +70,12 @@ export default {
   },
   mounted() {
     twemoji.parse(document.body)
+  },
+  methods: {
+    facebookSignin() {
+      console.log('facebookSignin')
+      firebase.auth().signInWithRedirect(facebookProvider)
+    }
   }
 }
 </script>

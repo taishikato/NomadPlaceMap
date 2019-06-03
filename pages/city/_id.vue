@@ -196,6 +196,7 @@ export default {
         geocoder.on('result', e => {
           this.isImageModalActive = true
           this.addingData = e.result
+          console.log(e)
           map.getSource('single-point').setData(e.result.geometry)
         })
       })
@@ -246,7 +247,11 @@ export default {
         new mapboxgl.Marker()
           .setLngLat([mark.coordinates.latitude, mark.coordinates.longitude])
           .setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(`<h3>${mark.name}</h3>`)
+            new mapboxgl.Popup({ offset: 25 }).setHTML(
+              `<h3 class="title is-5">${mark.name}</h3>
+              <p>100 Likes</p>
+              `
+            )
           )
           .addTo(map)
       })
