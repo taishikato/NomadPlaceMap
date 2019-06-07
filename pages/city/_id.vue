@@ -141,7 +141,9 @@ export default {
     await asyncForEach(placeData.docs, doc => {
       this.marks.push(doc.data())
     })
-    this.addMarks(map)
+    this.marks.forEach(marker => {
+      this.addMarks(map, marker)
+    })
   },
   methods: {
     createMap(latitude, longitude) {
@@ -242,19 +244,18 @@ export default {
         .doc(id)
         .set(data)
     },
-    addMarks(map) {
-      this.marks.forEach(mark => {
-        new mapboxgl.Marker()
-          .setLngLat([mark.coordinates.latitude, mark.coordinates.longitude])
-          .setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(
-              `<h3 class="title is-5">${mark.name}</h3>
-              <p>100 Likes</p>
-              `
-            )
+    addMarks(map, marker) {
+      new mapboxgl.Marker()
+        .setLngLat([marker.coordinates.latitude, marker.coordinates.longitude])
+        .setPopup(
+          new mapboxgl.Popup({ offset: 25 }).setHTML(
+            `<h3 class="title is-5">${marker.name}</h3>
+            <p><a href="../place/${marker.id}">Detail</a></p>
+            <p>100 Likes</p>
+            `
           )
-          .addTo(map)
-      })
+        )
+        .addTo(map)
     }
   }
 }

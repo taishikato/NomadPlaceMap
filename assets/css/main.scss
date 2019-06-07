@@ -10,9 +10,11 @@ body,
     height: 100%;
 }
 
+$productColor: #f1591f;
+
 .is-product-color {
     color: white;
-    background-color: #f1591f;
+    background-color: $productColor;
     * {
         color: white;
     }
@@ -21,10 +23,10 @@ body,
 .button.is-product-color.is-outlined {
     background-color: white;
     border-color: white;
-    color: #f1591f;
+    color: $productColor;
     &:hover {
-        background-color: #f1591f;
-        border-color: #f1591f;
+        background-color: $productColor;
+        border-color: $productColor;
         color: white;
     }
 }
@@ -65,9 +67,18 @@ $enclosure: 2px solid #e8e0e0 !important;
 
 .navbar {
     font-weight: 900;
+    border-top: $enclosure;
 }
 
 .nav-menu-enclosure {
     // box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2);
     border: $enclosure;
+}
+
+.title {
+    font-weight: 900;
+}
+
+.tag:not(body).is-danger {
+    background-color: $productColor !important;
 }
