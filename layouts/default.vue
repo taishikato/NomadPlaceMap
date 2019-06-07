@@ -49,6 +49,9 @@
           <div class="navbar-item">
             <a @click.prevent="facebookSignin">Sign Up with Facebook</a>
           </div>
+          <div class="navbar-item">
+            <a @click.prevent="logout">Log Out</a>
+          </div>
         </div>
         <div class="navbar-end">
           <div class="navbar-item">
@@ -72,6 +75,7 @@ const googleProvider = new firebase.auth.GoogleAuthProvider()
 const facebookProvider = new firebase.auth.FacebookAuthProvider()
 
 export default {
+  middleware: ['setLoginUser'],
   data() {
     return {
       searchQuery: ''
@@ -95,6 +99,27 @@ export default {
     },
     facebookSignin() {
       firebase.auth().signInWithRedirect(facebookProvider)
+    },
+    async logout() {
+      // Logout
+      try {
+        await firebase.auth().signOut()
+        // Firestoreとアンバインド
+        await this.$store.dispatch('UNBIND_USER')
+        // CommitでVuexの値を変更
+        this.$store.commit('changeUser', {
+          user: {}
+        })
+        this.$store.commit('changeLoginStatus', {
+          status: false
+        })
+      } catch (err) {
+        this.$toast.open({
+          message: 'Failed to Log Out… Please try again later',
+          type: 'is-danger',
+          duration: 3000
+        })
+      }
     }
   }
 }
