@@ -82,3 +82,7 @@ $enclosure: 2px solid #e8e0e0 !important;
 .tag:not(body).is-danger {
     background-color: $productColor !important;
 }
+
+.mapboxgl-popup-content {
+    border: $enclosure;
+}

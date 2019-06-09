@@ -3,9 +3,17 @@
     <div class="column is-7 container">
       <h2 id="place-name" class="title is-2">{{ place.name }}</h2>
       <a
+        v-show="isLiked === false"
         class="button is-outlined is-product-color nav-menu-enclosure"
         @click.prevent="like"
         >Like 👍</a
+      >
+
+      <a
+        v-show="isLiked"
+        class="button is-product-color nav-menu-enclosure"
+        @click.prevent="unlike"
+        >Liked ✔️</a
       >
 
       <!-- <nav class="level is-mobile">
@@ -43,6 +51,8 @@
 
 <script>
 /* eslint-disable no-console,no-unused-vars */
+import uuid from 'uuid/v4'
+import asyncForEach from '~/plugins/asyncForEach'
 
 import firebase from '~/plugins/firebase'
 // Use firestore
@@ -51,6 +61,14 @@ const firestore = firebase.firestore()
 
 export default {
   name: 'PlaceId',
+  data() {
+    return {
+      placeId: '',
+      isLiked: false,
+      placesLikesRef: null,
+      usersLikesRef: null
+    }
+  },
   async asyncData({ params }) {
     try {
       const result = await firestore
@@ -62,20 +80,47 @@ export default {
       console.log(err)
     }
   },
+  async created() {
+    this.placeId = this.$nuxt.$route.params.id
+    this.placesLikesRef = firestore
+      .collection('places')
+      .doc(this.placeId)
+      .collection('likes')
+    this.usersLikesRef = firestore
+      .collection('users')
+      .doc(this.$store.getters.getUserInfo.uid)
+      .collection('likes')
+    // check if this place is liked
+    const result = await this.usersLikesRef
+      .where('placeId', '==', this.placeId)
+      .get()
+    if (result.empty === false) {
+      this.isLiked = true
+    }
+  },
   methods: {
     async like() {
-      // await Promise.all([
-      //   firestore
-      //     .collection('places')
-      //     .doc()
-      //     .collection('likes')
-      //     .add(),
-      //   firestore
-      //     .collection('users')
-      //     .doc()
-      //     .collection('likes')
-      //     .add(),
-      // ])
+      const id = uuid()
+        .split('-')
+        .join('')
+      await Promise.all([
+        this.placesLikesRef.doc(id).set({
+          userId: this.$store.getters.getUserInfo.uid
+        }),
+        this.usersLikesRef.doc(id).set({ placeId: this.placeId })
+      ])
+      this.isLiked = true
+    },
+    async unlike() {
+      const result = await this.usersLikesRef
+        .where('placeId', '==', this.placeId)
+        .get()
+      const id = result.docs[0].id
+      await Promise.all([
+        this.usersLikesRef.doc(id).delete(),
+        this.placesLikesRef.doc(id).delete()
+      ])
+      this.isLiked = false
     }
   }
 }
