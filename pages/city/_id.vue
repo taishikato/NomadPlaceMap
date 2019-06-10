@@ -224,7 +224,7 @@ export default {
       await this.saveOnFirestore(id, {
         id,
         name: this.addingData.text_en,
-        address: this.addingData.properties.address,
+        address: this.addingData.properties.address || '',
         coordinates: {
           latitude: this.addingData.geometry.coordinates[0],
           longitude: this.addingData.geometry.coordinates[1]
@@ -245,17 +245,22 @@ export default {
         .doc(id)
         .set(data)
     },
-    addMarks(map, marker) {
+    async addMarks(map, marker) {
+      const res = await firestore
+        .collection('places')
+        .doc(marker.id)
+        .collection('likes')
+        .get()
+      let popUpContent = `
+      <h3 class="title is-5">${marker.name}</h3>
+      <p><a href="../place/${marker.id}">Detail</a></p>
+      `
+      if (res.size !== 0) {
+        popUpContent += `<p>${res.size} Likes</p>`
+      }
       new mapboxgl.Marker()
         .setLngLat([marker.coordinates.latitude, marker.coordinates.longitude])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 }).setHTML(
-            `<h3 class="title is-5">${marker.name}</h3>
-            <p><a href="../place/${marker.id}">Detail</a></p>
-            <p>100 Likes</p>
-            `
-          )
-        )
+        .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
         .addTo(map)
     }
   }

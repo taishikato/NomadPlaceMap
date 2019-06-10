@@ -18,7 +18,10 @@
 
       <div class="cont">
         <h3 class="title">♥️ Likes</h3>
-        <p class="subtitle">2534</p>
+        <p class="subtitle">
+          <span v-if="likeCount > 0">{{ likeCount }}</span>
+          <span v-if="likeCount === 0">🥚</span>
+        </p>
       </div>
 
       <div class="cont">
@@ -36,9 +39,6 @@
           >
             {{ tag }}
           </span>
-          <!-- <span class="tag is-danger is-medium">coffee</span>
-          <span class="tag is-danger is-medium">24/7</span>
-          <span class="tag is-danger is-medium">wifi</span> -->
         </div>
       </div>
     </div>
@@ -63,7 +63,8 @@ export default {
       placeId: '',
       isLiked: false,
       placesLikesRef: null,
-      usersLikesRef: null
+      usersLikesRef: null,
+      likeCount: ''
     }
   },
   async asyncData({ params }) {
@@ -87,6 +88,7 @@ export default {
       .collection('users')
       .doc(this.$store.getters.getUserInfo.uid)
       .collection('likes')
+
     // check if this place is liked
     const result = await this.usersLikesRef
       .where('placeId', '==', this.placeId)
@@ -94,6 +96,15 @@ export default {
     if (result.empty === false) {
       this.isLiked = true
     }
+
+    // Get like count
+    const res = await firestore
+      .collection('places')
+      .doc(this.placeId)
+      .collection('likes')
+      .get()
+    this.likeCount = res.size
+    console.log(this.likeCount)
   },
   mounted() {
     twemoji.parse(document.body)
@@ -110,6 +121,7 @@ export default {
         this.usersLikesRef.doc(id).set({ placeId: this.placeId })
       ])
       this.isLiked = true
+      this.likeCount++
     },
     async unlike() {
       const result = await this.usersLikesRef
@@ -121,6 +133,7 @@ export default {
         this.placesLikesRef.doc(id).delete()
       ])
       this.isLiked = false
+      this.likeCount--
     }
   }
 }
