@@ -1,16 +1,19 @@
 <template>
   <section id="place-id-edit" class="section columns">
     <div class="column is-7 container">
-      <n-link id="go-back" :to="`${placePageUrl}`" class="button is-text"
+      <n-link id="go-back" :to="`${placePageUrl}`" class="is-text"
         >⬅️Back to the place page</n-link
       >
       <h2 class="title is-2">Edit</h2>
       <h3 id="place-name" class="title is-3">{{ place.name }}</h3>
       <div class="field is-grouped is-grouped-multiline">
-        <div v-for="tag in tags" :key="tag.id" class="control">
+        <div v-for="(tag, index) in tags" :key="tag.id" class="control">
           <div class="tags has-addons">
             <span class="tag is-danger is-medium">{{ tag }}</span>
-            <a class="tag is-delete is-medium"></a>
+            <a
+              class="tag is-delete is-medium"
+              @click.prevent="deleteTag(index)"
+            ></a>
           </div>
         </div>
       </div>
@@ -94,6 +97,9 @@ export default {
         .update({
           tags: this.tags
         })
+    },
+    deleteTag(index) {
+      this.tags.splice(index, 1)
     }
   }
 }
@@ -101,6 +107,7 @@ export default {
 
 <style lang="scss" scoped>
 #go-back {
+  display: block;
   margin-bottom: 10px;
 }
 #save-btn {

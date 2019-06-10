@@ -29,10 +29,16 @@
           >
         </h3>
         <div class="tags">
-          <span class="tag is-danger is-medium">nomad</span>
-          <span class="tag is-danger is-medium">coffee</span>
+          <span
+            v-for="tag in place.tags"
+            :key="tag.id"
+            class="tag is-danger is-medium"
+          >
+            {{ tag }}
+          </span>
+          <!-- <span class="tag is-danger is-medium">coffee</span>
           <span class="tag is-danger is-medium">24/7</span>
-          <span class="tag is-danger is-medium">wifi</span>
+          <span class="tag is-danger is-medium">wifi</span> -->
         </div>
       </div>
     </div>
