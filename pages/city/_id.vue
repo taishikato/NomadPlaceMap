@@ -228,7 +228,8 @@ export default {
         coordinates: {
           latitude: this.addingData.geometry.coordinates[0],
           longitude: this.addingData.geometry.coordinates[1]
-        }
+        },
+        city: this.requestedCity
       })
       this.$toast.open({
         message: 'Yes! Successfuly saved this place 😚',

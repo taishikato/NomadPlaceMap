@@ -16,28 +16,18 @@
         >Liked ✔️</a
       >
 
-      <!-- <nav class="level is-mobile">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Likes 👍</p>
-            <p class="title">3,456</p>
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading">Made by 😎</p>
-            <p class="title">Takato</p>
-          </div>
-        </div>
-      </nav> -->
-
       <div class="cont">
-        <h3 class="title">Likes</h3>
+        <h3 class="title">♥️ Likes</h3>
         <p class="subtitle">2534</p>
       </div>
 
       <div class="cont">
-        <h3 class="title">Tags</h3>
+        <h3 class="title">
+          🏷️Tags
+          <n-link class="button is-text" :to="`/place/${placeId}/edit`"
+            >Edit</n-link
+          >
+        </h3>
         <div class="tags">
           <span class="tag is-danger is-medium">nomad</span>
           <span class="tag is-danger is-medium">coffee</span>
@@ -53,6 +43,7 @@
 /* eslint-disable no-console,no-unused-vars */
 import uuid from 'uuid/v4'
 import asyncForEach from '~/plugins/asyncForEach'
+import twemoji from 'twemoji'
 
 import firebase from '~/plugins/firebase'
 // Use firestore
@@ -97,6 +88,9 @@ export default {
     if (result.empty === false) {
       this.isLiked = true
     }
+  },
+  mounted() {
+    twemoji.parse(document.body)
   },
   methods: {
     async like() {
