@@ -77,6 +77,7 @@ const firestore = firebase.firestore()
 
 export default {
   name: 'CityId',
+  middleware: ['setLoginUser'],
   data() {
     return {
       requestedCity: 'vancouver',

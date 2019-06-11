@@ -61,6 +61,7 @@ const firestore = firebase.firestore()
 
 export default {
   name: 'PlaceId',
+  middleware: ['setLoginUser'],
   data() {
     return {
       placeId: '',
