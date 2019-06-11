@@ -36,7 +36,6 @@
     <b-modal :active.sync="isImageModalActive">
       <div id="model-box">
         <h3 class="title">Add This Place??</h3>
-        <!-- {{ addingData }} -->
         <div class="field">
           <div class="control">
             <h4 class="title is-4">{{ addingData.text_en }}</h4>
@@ -252,6 +251,23 @@ export default {
         },
         city: this.requestedCity
       })
+      const likeId = uuid()
+        .split('-')
+        .join('')
+      await Promise.all([
+        firestore
+          .collection('places')
+          .doc(id)
+          .collection('likes')
+          .doc(likeId)
+          .set({ userId: this.$store.getters.getUserInfo.uid }),
+        firestore
+          .collection('users')
+          .doc(this.$store.getters.getUserInfo.uid)
+          .collection('likes')
+          .doc(likeId)
+          .set({ placeId: id })
+      ])
       this.$toast.open({
         message: 'Yes! Successfuly saved this place 😚',
         type: 'is-success',
