@@ -86,3 +86,19 @@ $enclosure: 2px solid #e8e0e0 !important;
 .mapboxgl-popup-content {
     border: $enclosure;
 }
+
+.marker-normal {
+    background-color: hsl(204, 86%, 53%);
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.marker-popular {
+    background-color: #f1591f;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+}

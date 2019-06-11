@@ -2,7 +2,7 @@
   <section>
     <div id="map"></div>
 
-    <div class="select" style="z-index: 200;">
+    <div id="city-select" class="select" style="z-index: 200;">
       <select class="nav-menu-enclosure" @change="changeCity($event)">
         <option
           v-for="city in cities"
@@ -12,6 +12,15 @@
         >
           {{ city.name }}
         </option>
+      </select>
+    </div>
+
+    <div id="tag-filter-select" class="select" style="z-index: 200;">
+      <select class="nav-menu-enclosure" @change="changeFilter($event)">
+        <option value="">Tag Filter</option>
+        <option value="wifi">wifi</option>
+        <option value="nomad">nomad</option>
+        <option value="cafe">cafe</option>
       </select>
     </div>
 
@@ -81,6 +90,7 @@ export default {
         properties: {}
       },
       marks: [],
+      places: [],
       cities: {
         vancouver: {
           name: '🌳Vancouver',
@@ -137,9 +147,13 @@ export default {
     const map = this.createMap(latitude, longitude)
 
     // Get data from Firestore to add marks
-    const placeData = await firestore.collection('places').get()
-    await asyncForEach(placeData.docs, doc => {
+    const places = await firestore
+      .collection('places')
+      .where('city', '==', this.requestedCity)
+      .get()
+    await asyncForEach(places.docs, doc => {
       this.marks.push(doc.data())
+      this.places.push(doc.data())
     })
     this.marks.forEach(marker => {
       this.addMarks(map, marker)
@@ -150,7 +164,8 @@ export default {
       mapboxgl.accessToken = this.mapBoxAccessToken
       const map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
+        // style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
+        style: 'mapbox://styles/taishikato/cjw88gplb5f251cmncnerger7',
         center: [latitude, longitude],
         zoom: 11
       })
@@ -182,23 +197,12 @@ export default {
           }
         })
 
-        map.addLayer({
-          id: 'point',
-          source: 'single-point',
-          type: 'circle',
-          paint: {
-            'circle-radius': 10,
-            'circle-color': '#448ee4'
-          }
-        })
-
         // Listen for the `result` event from the Geocoder
         // `result` event is triggered when a user makes a selection
         //  Add a marker at the result's coordinates
         geocoder.on('result', e => {
           this.isImageModalActive = true
           this.addingData = e.result
-          console.log(e)
           map.getSource('single-point').setData(e.result.geometry)
         })
       })
@@ -216,6 +220,23 @@ export default {
     changeCity(event) {
       this.cityName = this.cities[event.target.value].name
       this.$router.push(`./${event.target.value}`)
+    },
+    async changeFilter(event) {
+      if (event.target.value === '') return
+      this.marks = []
+      const map = this.createMap(-123.1223953278889, 49.28159210931116)
+      // Get data from Firestore to add marks
+      const placeData = this.places.filter(
+        place =>
+          place.tags !== undefined &&
+          place.tags.indexOf(event.target.value) >= 0
+      )
+      await asyncForEach(placeData, doc => {
+        this.marks.push(doc)
+      })
+      this.marks.forEach(marker => {
+        this.addMarks(map, marker)
+      })
     },
     async savePlaceData() {
       const id = uuid()
@@ -252,13 +273,19 @@ export default {
         .collection('likes')
         .get()
       let popUpContent = `
-      <h3 class="title is-5">${marker.name}</h3>
+      <h3 class="title is-6">${marker.name}</h3>
+      <p class="subtitle is-7">${marker.address || ''}</p>
       <p><a href="../place/${marker.id}">Detail</a></p>
       `
       if (res.size !== 0) {
         popUpContent += `<p>${res.size} Likes</p>`
       }
-      new mapboxgl.Marker()
+      const el = document.createElement('div')
+      el.className = 'marker-normal'
+      if (res.size >= 5) {
+        el.className = 'marker-popular'
+      }
+      new mapboxgl.Marker(el)
         .setLngLat([marker.coordinates.latitude, marker.coordinates.longitude])
         .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
         .addTo(map)
@@ -304,11 +331,21 @@ body {
   background-color: white;
 }
 
-.select {
+#city-select {
   position: absolute;
   top: 10px;
   left: 130px;
   height: 50px;
+}
+
+#tag-filter-select {
+  position: absolute;
+  top: 10px;
+  left: 350px;
+  height: 50px;
+}
+
+.select {
   select {
     border: 0;
     height: 100%;
