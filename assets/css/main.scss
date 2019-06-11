@@ -88,17 +88,27 @@ $enclosure: 2px solid #e8e0e0 !important;
 }
 
 .marker-normal {
-    background-color: hsl(204, 86%, 53%);
-    width: 15px;
-    height: 15px;
+    // background-color: hsl(204, 86%, 53%);
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     cursor: pointer;
+    svg {
+        margin-top: -19px;
+    }
 }
 
 .marker-popular {
-    background-color: #f1591f;
-    width: 20px;
-    height: 20px;
+    // background-color: #f1591f;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     cursor: pointer;
+    svg {
+        margin-top: -19px;
+        path {
+            fill: #f1591f !important;
+            stroke: #f19d1f !important;
+        }
+    }
 }

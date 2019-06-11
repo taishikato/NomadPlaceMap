@@ -1,12 +1,37 @@
 <template>
   <div class="layout-container">
-    <h1 class="title is-product-color">
+    <h1 class="title brand is-product-color">
       <n-link to="/">
         🚶
       </n-link>
     </h1>
 
     <nuxt style="z-index: 100;" />
+
+    <b-modal :active.sync="isModalActive">
+      <div id="model-box" class="loginBtn has-text-centered">
+        <h3 class="title">HangoutMap</h3>
+        <button class="button google" @click.prevent="googleSignin">
+          Google
+        </button>
+        <button class="button facebook" @click.prevent="facebookSignin">
+          FaceBook
+        </button>
+        <button class="button twitter" @click.prevent="twitterSignin">
+          Twitter
+        </button>
+        <!-- <div class="field">
+          <div class="control">
+            <h4 class="title is-4">aa</h4>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            aaa
+          </div>
+        </div> -->
+      </div>
+    </b-modal>
 
     <nav
       class="navbar is-fixed-bottom"
@@ -17,6 +42,13 @@
         <n-link class="navbar-item" to="/">
           🚶
         </n-link>
+        <a
+          v-if="$store.getters.getLoginStatus === false"
+          class="navbar-item"
+          @click.prevent="showModal"
+        >
+          Sign Up / Log In
+        </a>
         <a
           role="button"
           class="navbar-burger burger"
@@ -29,8 +61,13 @@
           <span aria-hidden="true"></span>
         </a>
       </div>
-      <div id="navbarBasicExample" class="navbar-menu">
+      <div id="navbarBasicExample" class="navbar-menu is-mobile">
         <div class="navbar-start">
+          <div class="navbar-item">
+            <a @click.prevent="logout">Log Out</a>
+          </div>
+        </div>
+        <div class="navbar-end">
           <a
             href="https://taishikato.com/?ref=hangoutmap"
             class="navbar-item"
@@ -38,22 +75,6 @@
           >
             By Taishi
           </a>
-          <div class="navbar-item">
-            <a @click.prevent="emailPasswordLogin">
-              Sign Up with Email and Password
-            </a>
-          </div>
-          <div class="navbar-item">
-            <a @click.prevent="googleSignin">Sign Up with Google</a>
-          </div>
-          <div class="navbar-item">
-            <a @click.prevent="facebookSignin">Sign Up with Facebook</a>
-          </div>
-          <div class="navbar-item">
-            <a @click.prevent="logout">Log Out</a>
-          </div>
-        </div>
-        <div class="navbar-end">
           <div class="navbar-item">
             <a>
               FeedBack
@@ -73,12 +94,14 @@ import firebase from '~/plugins/firebase'
 
 const googleProvider = new firebase.auth.GoogleAuthProvider()
 const facebookProvider = new firebase.auth.FacebookAuthProvider()
+const twitterProvider = new firebase.auth.TwitterAuthProvider()
 
 export default {
   middleware: ['setLoginUser'],
   data() {
     return {
-      searchQuery: ''
+      searchQuery: '',
+      isModalActive: false
     }
   },
   mounted() {
@@ -99,6 +122,18 @@ export default {
     },
     facebookSignin() {
       firebase.auth().signInWithRedirect(facebookProvider)
+    },
+    twitterSignin() {
+      firebase.auth().signInWithRedirect(twitterProvider)
+    },
+    showModal() {
+      this.isModalActive = true
+    },
+    loginWithFacebook() {
+      console.log('loginWithFacebook')
+    },
+    loginWithTwitter() {
+      console.log('loginWithTwitter')
     },
     async logout() {
       // Logout
@@ -126,7 +161,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.title {
+.title.brand {
   height: 50px;
   font-size: 30px;
   font-weight: bold;
@@ -148,5 +183,36 @@ export default {
 
 #makerwidget {
   z-index: 200;
+}
+
+#model-box {
+  .title {
+    color: white;
+  }
+}
+.loginBtn {
+  .button {
+    display: block;
+    color: white;
+    width: 200px;
+    max-width: 80%;
+    margin: 10px auto;
+    font-weight: 900;
+  }
+  .facebook {
+    border-color: #3c5798;
+    background-color: #3c5798;
+  }
+
+  .twitter {
+    border-color: #00aced;
+    background-color: #00aced;
+  }
+
+  .google {
+    color: #363636;
+    border-color: #ffffff;
+    background-color: #ffffff;
+  }
 }
 </style>
