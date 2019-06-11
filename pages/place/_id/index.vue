@@ -1,6 +1,9 @@
 <template>
   <section class="columns section">
     <div class="column is-7 container">
+      <n-link id="go-back" :to="`/city/${place.city}`" class="is-text"
+        >⬅️Back to the map page</n-link
+      >
       <h2 id="place-name" class="title is-2">{{ place.name }}</h2>
       <a
         v-show="isLiked === false"
@@ -148,5 +151,9 @@ export default {
 }
 .cont {
   margin: 30px 0;
+}
+#go-back {
+  display: block;
+  margin-bottom: 10px;
 }
 </style>
