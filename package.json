@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^4.4.0",
+    "@nuxtjs/google-analytics": "^2.2.0",
     "@nuxtjs/pwa": "3.0.0-beta.16",
     "cross-env": "^5.2.0",
     "firebase": "^6.1.0",

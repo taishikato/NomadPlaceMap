@@ -54,7 +54,16 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['nuxt-buefy', '@nuxtjs/pwa'],
+  modules: [
+    'nuxt-buefy',
+    '@nuxtjs/pwa',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: 'UA-27648393-22'
+      }
+    ]
+  ],
 
   /*
    ** Build configuration
