@@ -14,16 +14,6 @@
         <button class="button twitter" @click.prevent="twitterSignin">
           Twitter
         </button>
-        <!-- <div class="field">
-          <div class="control">
-            <h4 class="title is-4">aa</h4>
-          </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            aaa
-          </div>
-        </div> -->
       </div>
     </b-modal>
 
@@ -32,47 +22,49 @@
       role="navigation"
       aria-label="main navigation"
     >
-      <div class="navbar-brand">
-        <n-link class="navbar-item" to="/">
-          🚶
-        </n-link>
-        <a
-          v-if="$store.getters.getLoginStatus === false"
-          class="navbar-item"
-          @click.prevent="showModal"
-        >
-          Sign Up / Log In
-        </a>
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          @click.prevent="toggleBurger"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-      <div id="nabvar-top" class="navbar-menu is-mobile">
-        <div v-if="$store.getters.getLoginStatus" class="navbar-start">
-          <div class="navbar-item">
-            <a @click.prevent="logout">Log Out</a>
-          </div>
-        </div>
-        <div class="navbar-end">
+      <div class="container">
+        <div class="navbar-brand">
+          <n-link class="navbar-item" to="/">
+            🚶
+          </n-link>
           <a
-            href="https://taishikato.com/?ref=hangoutmap"
+            v-if="$store.getters.getLoginStatus === false"
             class="navbar-item"
-            target="_blank"
+            @click.prevent="showModal"
           >
-            By Taishi
+            Sign Up / Log In
           </a>
-          <div class="navbar-item">
-            <a>
-              FeedBack
+          <a
+            role="button"
+            class="navbar-burger"
+            aria-label="menu"
+            aria-expanded="false"
+            @click.prevent="toggleBurger"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div id="nabvar-top" class="navbar-menu is-mobile">
+          <div v-if="$store.getters.getLoginStatus" class="navbar-start">
+            <div class="navbar-item">
+              <a @click.prevent="logout">Log Out</a>
+            </div>
+          </div>
+          <div class="navbar-end">
+            <a
+              href="https://taishikato.com/?ref=hangoutmap"
+              class="navbar-item"
+              target="_blank"
+            >
+              By Taishi
             </a>
+            <div class="navbar-item">
+              <a>
+                FeedBack
+              </a>
+            </div>
           </div>
         </div>
       </div>
