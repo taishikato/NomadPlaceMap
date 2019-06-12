@@ -7,7 +7,8 @@
             Hero title
           </h1>
           <h2 class="subtitle">
-            Hero subtitle
+            Hero subtitle<br />
+            <n-link to="/city/vancouver">Vancouver Map</n-link>
           </h2>
         </div>
       </div>

@@ -2,36 +2,38 @@
   <section>
     <div id="map"></div>
 
-    <div id="city-select" class="select" style="z-index: 200;">
-      <select class="nav-menu-enclosure" @change="changeCity($event)">
-        <option
-          v-for="city in cities"
-          :key="city.name"
-          :value="city.value"
-          :selected="requestedCity === city.value"
-        >
-          {{ city.name }}
-        </option>
-      </select>
-    </div>
+    <div id="top-nav">
+      <div id="city-select" class="select">
+        <select class="nav-menu-enclosure" @change="changeCity($event)">
+          <option
+            v-for="city in cities"
+            :key="city.name"
+            :value="city.value"
+            :selected="requestedCity === city.value"
+          >
+            {{ city.name }}
+          </option>
+        </select>
+      </div>
 
-    <div id="tag-filter-select" class="select" style="z-index: 200;">
-      <select class="nav-menu-enclosure" @change="changeFilter($event)">
-        <option value="">Tag Filter</option>
-        <option value="wifi">wifi</option>
-        <option value="nomad">nomad</option>
-        <option value="cafe">cafe</option>
-      </select>
-    </div>
+      <div id="tag-filter-select" class="select">
+        <select class="nav-menu-enclosure" @change="changeFilter($event)">
+          <option value="">Tag Filter</option>
+          <option value="wifi">wifi</option>
+          <option value="nomad">nomad</option>
+          <option value="cafe">cafe</option>
+        </select>
+      </div>
 
-    <a
-      v-show="showAddingPlaceButton === true"
-      id="add-box-trigger"
-      class="button is-product-color is-outlined nav-menu-enclosure"
-      @click.prevent="clickAddingPlaceButton"
-    >
-      Add a place you like
-    </a>
+      <a
+        v-show="showAddingPlaceButton === true"
+        id="add-box-trigger"
+        class="button is-product-color is-outlined nav-menu-enclosure"
+        @click.prevent="clickAddingPlaceButton"
+      >
+        Add a place you like
+      </a>
+    </div>
 
     <b-modal :active.sync="isImageModalActive">
       <div id="model-box">
@@ -339,9 +341,49 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$sp: 767px;
+@mixin sp {
+  @media (max-width: ($sp)) {
+    @content;
+  }
+}
+
 body {
   margin: 0;
   padding: 0;
+}
+
+#top-nav {
+  position: relative;
+  top: 10px;
+  width: 100%;
+  height: 50px;
+  margin-top: -40px;
+  > div,
+  a {
+    height: 50px;
+    position: absolute;
+  }
+  #city-select {
+    left: 50px;
+    @include sp {
+      left: 30px;
+    }
+  }
+  #tag-filter-select {
+    left: 270px;
+    @include sp {
+      left: 220px;
+    }
+  }
+  #add-box-trigger {
+    font-weight: 900;
+    right: 50px;
+    @include sp {
+      top: 60px;
+      left: 50px;
+    }
+  }
 }
 
 .is-outlined {
@@ -349,8 +391,6 @@ body {
 }
 
 #map {
-  /* width: 600px;
-  height: 500px; */
   position: absolute;
   top: 0;
   bottom: 0;
@@ -360,33 +400,10 @@ body {
   height: 100%;
 }
 
-#add-box-trigger {
-  position: absolute;
-  top: 10px;
-  right: 50px;
-  z-index: 200;
-  height: 50px;
-  font-weight: 900;
-}
-
 #model-box {
   padding: 10px;
   border-radius: 7px;
   background-color: white;
-}
-
-#city-select {
-  position: absolute;
-  top: 10px;
-  left: 130px;
-  height: 50px;
-}
-
-#tag-filter-select {
-  position: absolute;
-  top: 10px;
-  left: 350px;
-  height: 50px;
 }
 
 .select {

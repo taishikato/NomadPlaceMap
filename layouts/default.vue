@@ -1,11 +1,5 @@
 <template>
   <div class="layout-container">
-    <h1 class="title brand is-product-color">
-      <n-link to="/">
-        🚶
-      </n-link>
-    </h1>
-
     <nuxt style="z-index: 100;" />
 
     <b-modal :active.sync="isModalActive">
@@ -51,18 +45,18 @@
         </a>
         <a
           role="button"
-          class="navbar-burger burger"
+          class="navbar-burger"
           aria-label="menu"
           aria-expanded="false"
-          data-target="navbarBasicExample"
+          @click.prevent="toggleBurger"
         >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
-      <div id="navbarBasicExample" class="navbar-menu is-mobile">
-        <div class="navbar-start">
+      <div id="nabvar-top" class="navbar-menu is-mobile">
+        <div v-if="$store.getters.getLoginStatus" class="navbar-start">
           <div class="navbar-item">
             <a @click.prevent="logout">Log Out</a>
           </div>
@@ -134,6 +128,12 @@ export default {
     },
     loginWithTwitter() {
       console.log('loginWithTwitter')
+    },
+    toggleBurger() {
+      const burgerIcon = document.querySelector('.navbar-burger')
+      const dropMenu = document.getElementById('nabvar-top')
+      burgerIcon.classList.toggle('is-active')
+      dropMenu.classList.toggle('is-active')
     },
     async logout() {
       // Logout
