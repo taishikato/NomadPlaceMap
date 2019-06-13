@@ -224,15 +224,20 @@ export default {
       this.$router.push(`./${event.target.value}`)
     },
     async changeFilter(event) {
-      if (event.target.value === '') return
       this.marks = []
       const map = this.createMap(-123.1223953278889, 49.28159210931116)
-      // Get data from Firestore to add marks
-      const placeData = this.places.filter(
-        place =>
-          place.tags !== undefined &&
-          place.tags.indexOf(event.target.value) >= 0
-      )
+      let placeData
+      if (event.target.value === '') {
+        // Reset tag filter
+        placeData = this.places
+      } else {
+        // Get data from Firestore to add marks
+        placeData = this.places.filter(
+          place =>
+            place.tags !== undefined &&
+            place.tags.indexOf(event.target.value) >= 0
+        )
+      }
       await asyncForEach(placeData, doc => {
         this.marks.push(doc)
       })
