@@ -40,7 +40,20 @@
 
       <div class="field">
         <div class="control">
-          <button id="save-btn" class="button is-info" @click.prevent="saveTag">
+          <button
+            v-show="isLoading === false"
+            id="save-btn"
+            class="button is-info"
+            @click.prevent="saveTag"
+          >
+            Save
+          </button>
+          <button
+            v-show="isLoading === true"
+            id="save-btn"
+            class="button is-info is-loading"
+            disabled
+          >
             Save
           </button>
         </div>
@@ -67,7 +80,8 @@ export default {
       tags: [],
       placeId: '',
       place: {},
-      placePageUrl: ''
+      placePageUrl: '',
+      isLoading: false
     }
   },
   async created() {
@@ -91,12 +105,19 @@ export default {
       this.tags.unshift(this.selected)
     },
     async saveTag() {
+      this.isLoading = true
       await firestore
         .collection('places')
         .doc(this.placeId)
         .update({
           tags: this.tags
         })
+      this.isLoading = false
+      this.$toast.open({
+        message: 'Yes! Successfuly saved 😚',
+        type: 'is-success',
+        duration: 4000
+      })
     },
     deleteTag(index) {
       this.tags.splice(index, 1)

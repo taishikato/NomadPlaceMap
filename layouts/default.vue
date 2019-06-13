@@ -25,7 +25,7 @@
       <div class="container">
         <div class="navbar-brand">
           <n-link class="navbar-item" to="/">
-            🚶
+            🚶🚶‍♀️
           </n-link>
           <a
             v-if="$store.getters.getLoginStatus === false"
@@ -60,11 +60,11 @@
             >
               By Taishi
             </a>
-            <div class="navbar-item">
+            <!-- <div class="navbar-item">
               <a>
                 FeedBack
               </a>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
