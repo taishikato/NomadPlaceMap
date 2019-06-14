@@ -88,6 +88,17 @@ export default {
       .collection('places')
       .doc(this.placeId)
       .collection('likes')
+    // Get like count
+    const res = await firestore
+      .collection('places')
+      .doc(this.placeId)
+      .collection('likes')
+      .get()
+    this.likeCount = res.size
+
+    if (this.$store.getters.getLoginStatus === false) {
+      return
+    }
     this.usersLikesRef = firestore
       .collection('users')
       .doc(this.$store.getters.getUserInfo.uid)
@@ -100,15 +111,6 @@ export default {
     if (result.empty === false) {
       this.isLiked = true
     }
-
-    // Get like count
-    const res = await firestore
-      .collection('places')
-      .doc(this.placeId)
-      .collection('likes')
-      .get()
-    this.likeCount = res.size
-    console.log(this.likeCount)
   },
   mounted() {
     twemoji.parse(document.body)
