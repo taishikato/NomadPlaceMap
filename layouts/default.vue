@@ -4,7 +4,7 @@
 
     <b-modal :active.sync="isModalActive">
       <div id="model-box" class="loginBtn has-text-centered">
-        <h3 class="title">HangoutMap</h3>
+        <h3 class="title">NomadPlaceMap</h3>
         <button class="button google" @click.prevent="googleSignin">
           Google
         </button>

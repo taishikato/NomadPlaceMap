@@ -188,6 +188,29 @@ export default {
     this.marks.forEach(marker => {
       this.addMarks(map, marker)
     })
+
+    // Check GPS
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    }
+
+    const success = pos => {
+      const crd = pos.coords
+    }
+
+    function error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`)
+      // User denied Geolocation
+      if (err.code === 1) {
+        alert(
+          'Location information is unavailable. Please check your browser setting and make sure it can uses GPS to get youer curent position.'
+        )
+      }
+    }
+
+    navigator.geolocation.getCurrentPosition(success, error, options)
   },
   methods: {
     googleSignin() {
