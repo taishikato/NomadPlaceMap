@@ -58,7 +58,6 @@ $enclosure: 2px solid #e8e0e0 !important;
 
 .mapboxgl-control-container {
     .mapboxgl-ctrl-top-right {
-        display: none;
         right: 40px;
         width: 300px;
         @include sp {
@@ -67,6 +66,7 @@ $enclosure: 2px solid #e8e0e0 !important;
             left: 50px;
           }
         .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
+            display: none;
             width: 100%;
             height: 50px;
             box-shadow: none;
@@ -164,5 +164,21 @@ $enclosure: 2px solid #e8e0e0 !important;
         color: #363636;
         border-color: #ffffff;
         background-color: #ffffff;
+    }
+}
+
+$currentPositionBtn: 60px;
+.mapboxgl-ctrl.mapboxgl-ctrl-group {
+    box-shadow: none;
+    position: absolute;
+    top: 100px;
+    right: 0px;
+    border-radius: 50%;
+    width: $currentPositionBtn;
+    height: $currentPositionBtn;
+    border: $enclosure;
+    & > button {
+        width: $currentPositionBtn - 4px;
+        height: $currentPositionBtn - 4px;
     }
 }

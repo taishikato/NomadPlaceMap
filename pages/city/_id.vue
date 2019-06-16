@@ -208,6 +208,16 @@ export default {
         center: [latitude, longitude],
         zoom: 11
       })
+      // Add geolocate control to the map.
+      map.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true
+          },
+          trackUserLocation: true
+        })
+      )
+
       map.on('dblclick', e => {
         const lngLat = JSON.stringify(e.lngLat)
         console.log(lngLat)
@@ -253,7 +263,7 @@ export default {
     clickAddingPlaceButton() {
       this.showAddingPlaceButton = false
       document.getElementsByClassName(
-        'mapboxgl-ctrl-top-right'
+        'mapboxgl-ctrl-geocoder'
       )[0].style.display = 'block'
     },
     changeCity(event) {
