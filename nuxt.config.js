@@ -8,7 +8,6 @@ export default {
    */
   head: {
     htmlAttrs: {
-      class: 'has-navbar-fixed-top',
       lang: 'en'
     },
     title: pkg.name,

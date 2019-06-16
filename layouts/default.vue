@@ -25,7 +25,7 @@
       <div class="container">
         <div class="navbar-brand">
           <n-link class="navbar-item" to="/">
-            🚶🚶‍♀️
+            👩‍💻👨‍💻
           </n-link>
           <a
             v-if="$store.getters.getLoginStatus === false"
@@ -94,15 +94,6 @@ export default {
     twemoji.parse(document.body)
   },
   methods: {
-    async emailPasswordLogin() {
-      console.log('emailPasswordLogin')
-      const email = 'taishi.k0903@gmail.com'
-      const password = '000011'
-      const result = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-      console.log(result)
-    },
     googleSignin() {
       firebase.auth().signInWithRedirect(googleProvider)
     },
@@ -140,6 +131,7 @@ export default {
         this.$store.commit('changeLoginStatus', {
           status: false
         })
+        location.reload()
       } catch (err) {
         this.$toast.open({
           message: 'Failed to Log Out… Please try again later',
@@ -175,36 +167,5 @@ export default {
 
 #makerwidget {
   z-index: 200;
-}
-
-#model-box {
-  .title {
-    color: white;
-  }
-}
-.loginBtn {
-  .button {
-    display: block;
-    color: white;
-    width: 200px;
-    max-width: 80%;
-    margin: 10px auto;
-    font-weight: 900;
-  }
-  .facebook {
-    border-color: #3c5798;
-    background-color: #3c5798;
-  }
-
-  .twitter {
-    border-color: #00aced;
-    background-color: #00aced;
-  }
-
-  .google {
-    color: #363636;
-    border-color: #ffffff;
-    background-color: #ffffff;
-  }
 }
 </style>

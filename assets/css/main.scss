@@ -45,6 +45,15 @@ img.emoji {
     vertical-align: -0.1em;
 }
 
+#cities {
+    img.emoji {
+        height: 5em;
+        width: 5em;
+        margin: 0 0.05em 0 0.1em;
+        vertical-align: -0.1em;
+    }
+}
+
 $enclosure: 2px solid #e8e0e0 !important;
 
 .mapboxgl-control-container {
@@ -126,5 +135,34 @@ $enclosure: 2px solid #e8e0e0 !important;
 }
 
 .modal .animation-content {
-    max-width: 250px !important;
+    max-width: 300px !important;
+}
+
+#model-box {
+    .title {
+        color: white;
+    }
+}
+.loginBtn {
+    .button {
+        display: block;
+        color: white;
+        width: 200px;
+        max-width: 80%;
+        margin: 10px auto;
+        font-weight: 900;
+    }
+    .facebook {
+        border-color: #3c5798;
+        background-color: #3c5798;
+    }
+    .twitter {
+        border-color: #00aced;
+        background-color: #00aced;
+    }
+    .google {
+        color: #363636;
+        border-color: #ffffff;
+        background-color: #ffffff;
+    }
 }

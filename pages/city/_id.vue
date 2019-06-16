@@ -35,27 +35,50 @@
       </a>
     </div>
 
+    <b-modal :active.sync="isModalActive">
+      <div id="model-box" class="loginBtn has-text-centered">
+        <h3 class="title">Join NomadPlaceMap</h3>
+        <button class="button google" @click.prevent="googleSignin">
+          Google
+        </button>
+        <button class="button facebook" @click.prevent="facebookSignin">
+          FaceBook
+        </button>
+        <button class="button twitter" @click.prevent="twitterSignin">
+          Twitter
+        </button>
+      </div>
+    </b-modal>
+
     <b-modal :active.sync="isImageModalActive">
-      <div id="model-box">
-        <h3 class="title">Add This Place??</h3>
-        <div class="field">
-          <div class="control">
-            <h4 class="title is-4">{{ addingData.text_en }}</h4>
+      <div id="model-box add-place-box">
+        <h3 class="title has-text-centered" style="color: white;">
+          Add This Place??
+        </h3>
+        <div
+          style="background-color: white; border-radius: 3px; padding: 5px; border: 2px solid #e8e0e0"
+        >
+          <div class="field">
+            <div class="control">
+              <h4 class="title is-4">{{ addingData.text_en }}</h4>
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            {{ addingData.properties.address }}
+          <div class="field">
+            <div class="control">
+              {{ addingData.properties.address }}
+            </div>
           </div>
-        </div>
-        <div class="field is-grouped">
-          <div class="control">
-            <a class="button is-primary" @click.prevent="savePlaceData">Add</a>
-          </div>
-          <div class="control">
-            <button class="button is-text" @click="closeModel">
-              Cancel
-            </button>
+          <div class="field is-grouped">
+            <div class="control">
+              <a class="button is-primary" @click.prevent="savePlaceData"
+                >Add
+              </a>
+            </div>
+            <div class="control">
+              <button class="button is-text" @click="closeModel">
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -77,11 +100,16 @@ import firebase from '~/plugins/firebase'
 import 'firebase/firestore'
 const firestore = firebase.firestore()
 
+const googleProvider = new firebase.auth.GoogleAuthProvider()
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
+const twitterProvider = new firebase.auth.TwitterAuthProvider()
+
 export default {
   name: 'CityId',
   middleware: ['setLoginUser'],
   data() {
     return {
+      isModalActive: false,
       requestedCity: 'vancouver',
       mapBoxAccessToken:
         'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw',
@@ -162,6 +190,15 @@ export default {
     })
   },
   methods: {
+    googleSignin() {
+      firebase.auth().signInWithRedirect(googleProvider)
+    },
+    facebookSignin() {
+      firebase.auth().signInWithRedirect(facebookProvider)
+    },
+    twitterSignin() {
+      firebase.auth().signInWithRedirect(twitterProvider)
+    },
     createMap(latitude, longitude) {
       mapboxgl.accessToken = this.mapBoxAccessToken
       const map = new mapboxgl.Map({
@@ -224,6 +261,10 @@ export default {
       this.$router.push(`./${event.target.value}`)
     },
     async changeFilter(event) {
+      if (this.$store.getters.getLoginStatus === false) {
+        this.$router.push(`/login?path=/city/${this.requestedCity}`)
+        return
+      }
       this.marks = []
       const map = this.createMap(-123.1223953278889, 49.28159210931116)
       let placeData
@@ -259,23 +300,6 @@ export default {
         },
         city: this.requestedCity
       })
-      const likeId = uuid()
-        .split('-')
-        .join('')
-      await Promise.all([
-        firestore
-          .collection('places')
-          .doc(id)
-          .collection('likes')
-          .doc(likeId)
-          .set({ userId: this.$store.getters.getUserInfo.uid }),
-        firestore
-          .collection('users')
-          .doc(this.$store.getters.getUserInfo.uid)
-          .collection('likes')
-          .doc(likeId)
-          .set({ placeId: id })
-      ])
       this.$toast.open({
         message: 'Yes! Successfuly saved this place 😚',
         type: 'is-success',
@@ -360,7 +384,7 @@ body {
 
 #top-nav {
   position: relative;
-  top: 10px;
+  top: 60px;
   width: 100%;
   height: 50px;
   margin-top: -40px;
@@ -403,12 +427,6 @@ body {
 }
 .container {
   height: 100%;
-}
-
-#model-box {
-  padding: 10px;
-  border-radius: 7px;
-  background-color: white;
 }
 
 .select {
