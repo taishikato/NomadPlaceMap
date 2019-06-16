@@ -1,5 +1,20 @@
 <template>
   <section class="columns section">
+    <b-modal :active.sync="isModalActive">
+      <div id="model-box" class="loginBtn has-text-centered">
+        <h3 class="title">NomadPlaceMap</h3>
+        <button class="button google" @click.prevent="googleSignin">
+          Google
+        </button>
+        <button class="button facebook" @click.prevent="facebookSignin">
+          FaceBook
+        </button>
+        <button class="button twitter" @click.prevent="twitterSignin">
+          Twitter
+        </button>
+      </div>
+    </b-modal>
+
     <div class="column is-7 container">
       <n-link id="go-back" :to="`/city/${place.city}`" class="is-text"
         >⬅️Back to the map page</n-link
@@ -59,6 +74,10 @@ import firebase from '~/plugins/firebase'
 import 'firebase/firestore'
 const firestore = firebase.firestore()
 
+const googleProvider = new firebase.auth.GoogleAuthProvider()
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
+const twitterProvider = new firebase.auth.TwitterAuthProvider()
+
 export default {
   name: 'PlaceId',
   middleware: ['setLoginUser'],
@@ -68,7 +87,8 @@ export default {
       isLiked: false,
       placesLikesRef: null,
       usersLikesRef: null,
-      likeCount: ''
+      likeCount: '',
+      isModalActive: false
     }
   },
   async asyncData({ params }) {
@@ -116,7 +136,20 @@ export default {
     twemoji.parse(document.body)
   },
   methods: {
+    googleSignin() {
+      firebase.auth().signInWithRedirect(googleProvider)
+    },
+    facebookSignin() {
+      firebase.auth().signInWithRedirect(facebookProvider)
+    },
+    twitterSignin() {
+      firebase.auth().signInWithRedirect(twitterProvider)
+    },
     async like() {
+      if (this.$store.getters.getLoginStatus === false) {
+        this.isModalActive = true
+        return
+      }
       const id = uuid()
         .split('-')
         .join('')

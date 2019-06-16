@@ -31,7 +31,6 @@ const twitterProvider = new firebase.auth.TwitterAuthProvider()
 export default {
   name: 'Login',
   async created() {
-    console.log(this.$route.query)
     const authUser = await auth()
     if (authUser === false) return
 
