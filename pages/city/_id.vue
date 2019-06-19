@@ -19,9 +19,17 @@
       <div id="tag-filter-select" class="select">
         <select class="nav-menu-enclosure" @change="changeFilter($event)">
           <option value="">Tag Filter</option>
-          <option value="wifi">wifi</option>
-          <option value="nomad">nomad</option>
-          <option value="cafe">cafe</option>
+          <option value="wifi">Wi-Fi</option>
+          <option value="cafe">Cafe</option>
+          <option value="fast-wifi">Fast Wi-Fi</option>
+          <option value="24/7">24/7</option>
+          <option value="quiet">Quiet</option>
+          <option value="vegan">Vegan</option>
+          <option value="cheap">Cheap</option>
+          <option value="gourmet-coffee">Gourmet Coffee</option>
+          <option value="confortable-chair">Confortable Chair</option>
+          <option value="coworking">Coworking</option>
+          <option value="healthy-snack">Healthy Snack</option>
         </select>
       </div>
 
