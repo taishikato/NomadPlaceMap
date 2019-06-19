@@ -8,7 +8,7 @@
           </h1>
           <h2 class="subtitle is-3">
             <p>
-              Cloudsourced map for digital nomads to find a good place to work
+              Crowdsourced map for digital nomads to find a good place to work
               in the city
             </p>
           </h2>

@@ -34,29 +34,111 @@
         >Liked ✔️</a
       >
 
-      <div class="cont">
-        <h3 class="title">♥️ Likes</h3>
-        <p class="subtitle">
-          <span v-if="likeCount > 0">{{ likeCount }}</span>
-          <span v-if="likeCount === 0">🥚</span>
-        </p>
-      </div>
+      <n-link class="button is-text" :to="`/place/${placeId}/edit`"
+        >Edit</n-link
+      >
 
-      <div class="cont">
-        <h3 class="title">
-          🏷️Tags
-          <n-link class="button is-text" :to="`/place/${placeId}/edit`"
-            >Edit</n-link
-          >
-        </h3>
-        <div class="tags">
-          <span
-            v-for="tag in place.tags"
-            :key="tag.id"
-            class="tag is-danger is-medium"
-          >
-            {{ tag }}
-          </span>
+      <div class="columns">
+        <div class="column">
+          <div class="cont">
+            <h3 class="title">♥️ Likes</h3>
+            <p class="subtitle">
+              <span v-if="likeCount > 0">{{ likeCount }}</span>
+              <span v-if="likeCount === 0">🥚</span>
+            </p>
+          </div>
+
+          <div class="cont">
+            <h3 class="title">
+              🏷️Tags
+            </h3>
+            <div class="tags">
+              <span
+                v-for="tag in place.tags"
+                :key="tag.id"
+                class="tag is-danger is-medium"
+              >
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th>Mon</th>
+                <td>
+                  <span v-show="place.businessHours.mon.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.mon.isHoliday === false">
+                    {{ place.businessHours.mon.open }} -
+                    {{ place.businessHours.mon.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Tue</th>
+                <td>
+                  <span v-show="place.businessHours.tue.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.tue.isHoliday === false">
+                    {{ place.businessHours.tue.open }} -
+                    {{ place.businessHours.tue.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Wed</th>
+                <td>
+                  <span v-show="place.businessHours.wed.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.wed.isHoliday === false">
+                    {{ place.businessHours.wed.open }} -
+                    {{ place.businessHours.wed.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Thu</th>
+                <td>
+                  <span v-show="place.businessHours.thu.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.thu.isHoliday === false">
+                    {{ place.businessHours.thu.open }} -
+                    {{ place.businessHours.thu.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Fri</th>
+                <td>
+                  <span v-show="place.businessHours.fri.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.fri.isHoliday === false">
+                    {{ place.businessHours.fri.open }} -
+                    {{ place.businessHours.fri.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Sat</th>
+                <td>
+                  <span v-show="place.businessHours.sat.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.sat.isHoliday === false">
+                    {{ place.businessHours.sat.open }} -
+                    {{ place.businessHours.sat.close }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <th>Sun</th>
+                <td>
+                  <span v-show="place.businessHours.sun.isHoliday">Closed</span>
+                  <span v-show="place.businessHours.sun.isHoliday === false">
+                    {{ place.businessHours.sun.open }} -
+                    {{ place.businessHours.sun.close }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -191,5 +273,17 @@ export default {
 #go-back {
   display: block;
   margin-bottom: 10px;
+}
+
+.table {
+  font-size: 0.9rem;
+  .table th {
+    padding: 0.2em 0.75em;
+  }
+}
+table,
+th,
+td {
+  border: none;
 }
 </style>

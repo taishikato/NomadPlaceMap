@@ -6,6 +6,53 @@
       >
       <h2 class="title is-2">Edit</h2>
       <h3 id="place-name" class="title is-3">{{ place.name }}</h3>
+
+      <div id="businesshours-edit">
+        <h4 class="title is-4">🕒Business Hours</h4>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Open</th>
+              <th>Close</th>
+              <th>Holiday</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(businessHour, key) in businessHours"
+              :key="businessHour.id"
+            >
+              <th>{{ key.charAt(0).toUpperCase() + key.slice(1) }}</th>
+              <td>
+                <input
+                  v-model="businessHour.open"
+                  class="input"
+                  type="text"
+                  placeholder="8:00 am"
+                  size="10"
+                />
+              </td>
+              <td>
+                <input
+                  v-model="businessHour.close"
+                  class="input"
+                  type="text"
+                  placeholder="7:00 pm"
+                  size="10"
+                />
+              </td>
+              <td>
+                <input v-model="businessHour.isHoliday" type="checkbox" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 class="title is-4">🏷️Tags</h4>
+
       <div class="field is-grouped is-grouped-multiline">
         <div v-for="(tag, index) in tags" :key="tag.id" class="control">
           <div class="tags has-addons">
@@ -17,6 +64,7 @@
           </div>
         </div>
       </div>
+
       <div class="field">
         <label class="label">Tags</label>
         <div class="control">
@@ -44,7 +92,7 @@
             v-show="isLoading === false"
             id="save-btn"
             class="button is-info"
-            @click.prevent="saveTag"
+            @click.prevent="save"
           >
             Save
           </button>
@@ -81,7 +129,44 @@ export default {
       placeId: '',
       place: {},
       placePageUrl: '',
-      isLoading: false
+      isLoading: false,
+      businessHours: {
+        mon: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        tue: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        wed: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        thu: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        fri: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        sat: {
+          open: '',
+          close: '',
+          isHoliday: false
+        },
+        sun: {
+          open: '',
+          close: '',
+          isHoliday: false
+        }
+      }
     }
   },
   async created() {
@@ -93,6 +178,12 @@ export default {
       .get()
     const place = placeData.data()
     this.place = place
+    console.log(place.businessHours)
+    if (place.businessHours !== undefined) {
+      Object.keys(this.businessHours).forEach(day => {
+        this.businessHours[day] = place.businessHours[day]
+      })
+    }
     if (place.tags !== undefined && Array.isArray(place.tags)) {
       this.tags = place.tags
     }
@@ -104,12 +195,13 @@ export default {
     addTag(event) {
       this.tags.unshift(this.selected)
     },
-    async saveTag() {
+    async save() {
       this.isLoading = true
       await firestore
         .collection('places')
         .doc(this.placeId)
         .update({
+          businessHours: this.businessHours,
           tags: this.tags
         })
       this.isLoading = false
@@ -133,5 +225,16 @@ export default {
 }
 #save-btn {
   width: 100%;
+}
+#businesshours-edit {
+  margin-bottom: 40px;
+  .input {
+    width: auto;
+  }
+  table,
+  th,
+  td {
+    border: none;
+  }
 }
 </style>
