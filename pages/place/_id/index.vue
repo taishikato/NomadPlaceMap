@@ -174,12 +174,13 @@ export default {
     }
   },
   async asyncData({ params }) {
+    let place
     try {
       const result = await firestore
         .collection('places')
         .doc(params.id)
         .get()
-      const place = result.data()
+      place = result.data()
       if (place.businessHours !== undefined) {
         return { place }
       }
@@ -209,6 +210,13 @@ export default {
       return { place }
     } catch (err) {
       console.log(err)
+      if (place === undefined) {
+        const error = new Error()
+        error.message = `We can't find the place you requested`
+        error.statusCode = 404
+        throw error
+      }
+      throw err
     }
   },
   async created() {

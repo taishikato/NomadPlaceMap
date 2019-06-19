@@ -177,13 +177,24 @@ export default {
   },
   created() {
     this.requestedCity = this.$route.params.id
+    if (this.cities[this.requestedCity] === undefined) {
+      const error = new Error()
+      error.message = `We can't find the city named ${this.requestedCity}`
+      error.statusCode = 404
+      throw error
+    }
     this.cityName = this.cities[this.requestedCity].name
   },
   async mounted() {
+    if (this.cities[this.requestedCity] === undefined) {
+      const error = new Error()
+      error.message = `We can't find the city named ${this.requestedCity}`
+      error.statusCode = 404
+      throw error
+    }
     const latitude = this.cities[this.requestedCity].coordinates.latitude
     const longitude = this.cities[this.requestedCity].coordinates.longitude
     const map = this.createMap(latitude, longitude)
-
     // Get data from Firestore to add marks
     const places = await firestore
       .collection('places')
@@ -203,11 +214,9 @@ export default {
       timeout: 5000,
       maximumAge: 0
     }
-
     const success = pos => {
       const crd = pos.coords
     }
-
     function error(err) {
       console.warn(`ERROR(${err.code}): ${err.message}`)
       // User denied Geolocation
@@ -217,7 +226,6 @@ export default {
         )
       }
     }
-
     navigator.geolocation.getCurrentPosition(success, error, options)
   },
   methods: {
