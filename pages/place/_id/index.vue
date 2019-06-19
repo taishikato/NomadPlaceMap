@@ -179,8 +179,37 @@ export default {
         .collection('places')
         .doc(params.id)
         .get()
-      return { place: result.data() }
+      const place = result.data()
+      console.log(place.businessHours)
+      if (place.businessHours === undefined) {
+        console.log('aaa')
+        place.businessHours = {
+          mon: {
+            isHoliday: false
+          },
+          tue: {
+            isHoliday: false
+          },
+          wed: {
+            isHoliday: false
+          },
+          thu: {
+            isHoliday: false
+          },
+          fri: {
+            isHoliday: false
+          },
+          sat: {
+            isHoliday: false
+          },
+          sun: {
+            isHoliday: false
+          }
+        }
+      }
+      return { place }
     } catch (err) {
+      console.log('here')
       console.log(err)
     }
   },
