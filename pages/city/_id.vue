@@ -16,21 +16,10 @@
         </select>
       </div>
 
-      <div id="tag-filter-select" class="select">
-        <select class="nav-menu-enclosure" @change="changeFilter($event)">
-          <option value="">Tag Filter</option>
-          <option value="wifi">Wi-Fi</option>
-          <option value="cafe">Cafe</option>
-          <option value="fast-wifi">Fast Wi-Fi</option>
-          <option value="24/7">24/7</option>
-          <option value="quiet">Quiet</option>
-          <option value="vegan">Vegan</option>
-          <option value="cheap">Cheap</option>
-          <option value="gourmet-coffee">Gourmet Coffee</option>
-          <option value="confortable-chair">Confortable Chair</option>
-          <option value="coworking">Coworking</option>
-          <option value="healthy-snack">Healthy Snack</option>
-        </select>
+      <div id="tag-filter-select">
+        <button class="button nav-menu-enclosure" @click="showFilterModal">
+          Tag Filter
+        </button>
       </div>
 
       <a
@@ -43,7 +32,83 @@
       </a>
     </div>
 
-    <b-modal :active.sync="isModalActive">
+    <b-modal :active.sync="isFilterModalActive">
+      <div id="filter-box" class="white-modal-box">
+        <h3 class="title has-text-centered">Tag Filter</h3>
+        <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="wifi" />
+          Wi-Fi
+        </label>
+        <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="cafe" />
+          Cafe
+        </label>
+        <label class="checkbox">
+          <input
+            v-model="filterSelectedTags"
+            type="checkbox"
+            value="fast-wifi"
+          />
+          Fast Wi-Fi
+        </label>
+        <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="quiet" />
+          Quiet
+        </label>
+        <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="24/7" />
+          24/7
+        </label>
+        <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="vegan" />
+          Vegan
+        </label>
+        <label class="checkbox">
+          <input
+            v-model="filterSelectedTags"
+            type="checkbox"
+            value="gourmet-coffee"
+          />
+          Gourmet Coffee
+        </label>
+        <label class="checkbox">
+          <input
+            v-model="filterSelectedTags"
+            type="checkbox"
+            value="confortable-chair"
+          />
+          Confortable Chair
+        </label>
+        <label class="checkbox">
+          <input
+            v-model="filterSelectedTags"
+            type="checkbox"
+            value="coworking"
+          />
+          Coworking
+        </label>
+        <label class="checkbox">
+          <input
+            v-model="filterSelectedTags"
+            type="checkbox"
+            value="healthy-snack"
+          />
+          Healthy Snack
+        </label>
+        <div class="field">
+          <div class="control">
+            <button
+              class="button is-product-color"
+              @click.prevent="changeFilter"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      </div>
+    </b-modal>
+
+    <b-modal :active.sync="isModalActive" class="narrow-modal">
       <div id="model-box" class="loginBtn has-text-centered">
         <h3 class="title">Join NomadPlaceMap</h3>
         <button class="button google" @click.prevent="googleSignin">
@@ -118,6 +183,7 @@ export default {
   data() {
     return {
       isModalActive: false,
+      isFilterModalActive: false,
       requestedCity: 'vancouver',
       mapBoxAccessToken:
         'pk.eyJ1IjoidGFpc2hpa2F0byIsImEiOiJjanc3NjhqcmYwcm84NGFsdzd2cHFsNmgwIn0.SklNRiivq2gBY3i4xkRuqw',
@@ -129,6 +195,7 @@ export default {
       },
       marks: [],
       places: [],
+      filterSelectedTags: [],
       cities: {
         vancouver: {
           name: '🌳Vancouver',
@@ -238,6 +305,9 @@ export default {
     twitterSignin() {
       firebase.auth().signInWithRedirect(twitterProvider)
     },
+    showFilterModal() {
+      this.isFilterModalActive = true
+    },
     createMap(latitude, longitude) {
       mapboxgl.accessToken = this.mapBoxAccessToken
       const map = new mapboxgl.Map({
@@ -309,31 +379,28 @@ export default {
       this.cityName = this.cities[event.target.value].name
       this.$router.push(`./${event.target.value}`)
     },
-    async changeFilter(event) {
-      if (this.$store.getters.getLoginStatus === false) {
-        this.$router.push(`/login?path=/city/${this.requestedCity}`)
-        return
-      }
+    async changeFilter() {
       this.marks = []
       const map = this.createMap(-123.1223953278889, 49.28159210931116)
-      let placeData
-      if (event.target.value === '') {
-        // Reset tag filter
-        placeData = this.places
-      } else {
-        // Get data from Firestore to add marks
-        placeData = this.places.filter(
-          place =>
-            place.tags !== undefined &&
-            place.tags.indexOf(event.target.value) >= 0
-        )
-      }
+      const placeData = []
+      this.places.forEach(place => {
+        let hasTag = true
+        this.filterSelectedTags.forEach(tag => {
+          if (place.tags === undefined || place.tags.indexOf(tag) === -1) {
+            hasTag = false
+          }
+        })
+        if (hasTag === true) {
+          placeData.push(place)
+        }
+      })
       await asyncForEach(placeData, doc => {
         this.marks.push(doc)
       })
       this.marks.forEach(marker => {
         this.addMarks(map, marker)
       })
+      this.isFilterModalActive = false
     },
     async savePlaceData() {
       const id = uuid()
@@ -450,6 +517,9 @@ body {
   }
   #tag-filter-select {
     left: 270px;
+    button {
+      font-weight: 900;
+    }
     @include sp {
       left: 220px;
     }
@@ -461,6 +531,9 @@ body {
       top: 60px;
       left: 50px;
     }
+  }
+  .button {
+    height: 50px;
   }
 }
 
@@ -483,6 +556,16 @@ body {
     border: 0;
     height: 100%;
     font-weight: 900;
+  }
+}
+
+.modal.animation-content {
+  max-width: 960px;
+}
+
+#filter-box {
+  .checkbox {
+    margin-right: 10px;
   }
 }
 </style>
