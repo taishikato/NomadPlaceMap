@@ -2,7 +2,7 @@
   <div class="layout-container">
     <nuxt style="z-index: 100;" />
 
-    <b-modal :active.sync="isModalActive">
+    <b-modal :active.sync="isModalActive" class="narrow-modal">
       <div id="model-box" class="loginBtn has-text-centered">
         <h3 class="title">NomadPlaceMap</h3>
         <button class="button google" @click.prevent="googleSignin">
