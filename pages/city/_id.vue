@@ -381,7 +381,10 @@ export default {
     },
     async changeFilter() {
       this.marks = []
-      const map = this.createMap(-123.1223953278889, 49.28159210931116)
+      const map = this.createMap(
+        this.cities[this.requestedCity].coordinates.latitude,
+        this.cities[this.requestedCity].coordinates.longitude
+      )
       const placeData = []
       this.places.forEach(place => {
         let hasTag = true
