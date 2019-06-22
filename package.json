@@ -1,7 +1,7 @@
 {
   "name": "NomadPlaceMap",
   "version": "1.0.0",
-  "description": "Cloudsourced map for digital nomads to find a good place to work in the city",
+  "description": "Crowdsourced map for digital nomads to find a good place to work in the city",
   "author": "taishikato",
   "private": true,
   "scripts": {

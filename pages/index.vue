@@ -12,10 +12,17 @@
               in the city
             </p>
           </h2>
-          <p>
-            Are you looking for a cafe to work??<br />NomadPlaceMap is the right
-            place to come
-          </p>
+          <ul id="medium-text" class="has-text-left">
+            <li class="is-size-5">
+              ☕Are you looking for a cafe with Wi-Fi and vegan menu to work??
+            </li>
+            <li class="is-size-5">
+              📖Are you looking for a quite place to study??
+            </li>
+            <li class="is-size-4">
+              👉NomadPlaceMap is the right place to come
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -52,4 +59,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+#medium-text {
+  max-width: 600px;
+  margin: 0 auto;
+}
+</style>

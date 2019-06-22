@@ -10,11 +10,17 @@ export default {
     htmlAttrs: {
       lang: 'en'
     },
-    title: pkg.name,
+    title:
+      'Where to work around the world | Work places map for Nomad by NomadPlaceMap',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'description', content: pkg.description },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://nomadplacemap.com/ogimage.png'
+      }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

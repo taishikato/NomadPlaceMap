@@ -479,8 +479,14 @@ export default {
       if (res.size >= 5) {
         el.className = 'marker-popular'
       }
-      new mapboxgl.Marker(el)
-        .setLngLat([marker.coordinates.latitude, marker.coordinates.longitude])
+      const latitude = marker.customCoordinates
+        ? marker.customCoordinates.latitude
+        : marker.coordinates.latitude
+      const longitude = marker.customCoordinates
+        ? marker.customCoordinates.longitude
+        : marker.coordinates.longitude
+      new mapboxgl.Marker({ element: el, offset: [0, 0] })
+        .setLngLat([latitude, longitude])
         .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
         .addTo(map)
     }
