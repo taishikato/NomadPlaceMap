@@ -30,6 +30,14 @@
       >
         Add a place you like
       </a>
+
+      <button
+        id="add-current-location"
+        class="button"
+        @click.prevent="addCurrentLocation"
+      >
+        Add a place where you currently are
+      </button>
     </div>
 
     <b-modal :active.sync="isFilterModalActive">
@@ -123,6 +131,25 @@
       </div>
     </b-modal>
 
+    <div id="add-current-place-box" class="white-modal-box">
+      <h3 class="title">Add Your Current Location?</h3>
+      <div class="field">
+        <label class="label">Place Name</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            size="30"
+            style="width: auto;"
+            placeholder="Starbucks"
+          />
+        </div>
+      </div>
+      <button class="button google" @click.prevent="googleSignin">
+        Add
+      </button>
+    </div>
+
     <b-modal :active.sync="isImageModalActive">
       <div id="model-box add-place-box">
         <h3 class="title has-text-centered" style="color: white;">
@@ -182,6 +209,7 @@ export default {
   middleware: ['setLoginUser'],
   data() {
     return {
+      map: null,
       isModalActive: false,
       isFilterModalActive: false,
       requestedCity: 'vancouver',
@@ -261,7 +289,7 @@ export default {
     }
     const latitude = this.cities[this.requestedCity].coordinates.latitude
     const longitude = this.cities[this.requestedCity].coordinates.longitude
-    const map = this.createMap(latitude, longitude)
+    this.map = this.createMap(latitude, longitude)
     // Get data from Firestore to add marks
     const places = await firestore
       .collection('places')
@@ -272,7 +300,7 @@ export default {
       this.places.push(doc.data())
     })
     this.marks.forEach(marker => {
-      this.addMarks(map, marker)
+      this.addMarks(this.map, marker)
     })
 
     // Check GPS
@@ -304,6 +332,43 @@ export default {
     },
     twitterSignin() {
       firebase.auth().signInWithRedirect(twitterProvider)
+    },
+    addCurrentLocation() {
+      // Check GPS
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+      const success = pos => {
+        const crd = pos.coords
+        const el = document.createElement('p')
+        el.setAttribute(
+          'style',
+          `width: 19px; height: 19px; background-color: #1da1f2; z-index: 300;
+          border-radius: 50%; border: 2px solid #ffffff;`
+        )
+        new mapboxgl.Marker({ element: el })
+          .setLngLat([crd.longitude, crd.latitude])
+          // .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
+          .addTo(this.map)
+        this.map.setCenter([crd.longitude, crd.latitude])
+        this.map.zoomTo(13)
+        const addCurrentPlaceBox = document.getElementById(
+          'add-current-place-box'
+        )
+        addCurrentPlaceBox.style.display = 'block'
+      }
+      function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`)
+        // User denied Geolocation
+        if (err.code === 1) {
+          alert(
+            'Location information is unavailable. Please check your browser setting and make sure it can uses GPS to get youer curent position.'
+          )
+        }
+      }
+      navigator.geolocation.getCurrentPosition(success, error, options)
     },
     showFilterModal() {
       this.isFilterModalActive = true
@@ -524,6 +589,11 @@ body {
       left: 30px;
     }
   }
+  #add-current-location {
+    position: absolute;
+    right: 50px;
+    top: 60px;
+  }
   #tag-filter-select {
     left: 270px;
     button {
@@ -576,5 +646,16 @@ body {
   .checkbox {
     margin-right: 10px;
   }
+}
+
+#add-current-place-box {
+  display: none;
+  bottom: 100px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 80%;
+  max-width: 500px;
 }
 </style>
