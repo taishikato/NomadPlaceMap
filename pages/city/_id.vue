@@ -44,6 +44,10 @@
           Cafe
         </label>
         <label class="checkbox">
+          <input v-model="filterSelectedTags" type="checkbox" value="outlet" />
+          Outlet
+        </label>
+        <label class="checkbox">
           <input
             v-model="filterSelectedTags"
             type="checkbox"

@@ -72,6 +72,7 @@
             <select v-model="selected">
               <option value="wifi">Wi-Fi</option>
               <option value="cafe">Cafe</option>
+              <option value="outlet">Outlet</option>
               <option value="fast-wifi">Fast Wi-Fi</option>
               <option value="24/7">24/7</option>
               <option value="quiet">Quiet</option>
