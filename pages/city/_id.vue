@@ -428,7 +428,7 @@ export default {
         type: 'is-success',
         duration: 3000
       })
-      this.closeModel()
+      this.$router.push(`/place/${id}`)
     },
     async saveOnFirestore(id, data) {
       const created = getUnixTime()
