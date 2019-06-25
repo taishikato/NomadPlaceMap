@@ -14,5 +14,9 @@ service cloud.firestore {
         allow read: if request.auth.uid != null;
       }
     }
+    match /users/{userId} {
+      allow write: if request.auth.uid == userId;
+      allow read: if request.auth.uid != null;
+    }
   }
 }

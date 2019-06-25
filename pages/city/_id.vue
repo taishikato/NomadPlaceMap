@@ -30,6 +30,14 @@
       >
         Add a place you like
       </a>
+
+      <button
+        id="add-current-location"
+        class="button nav-menu-enclosure"
+        @click.prevent="addCurrentLocation"
+      >
+        Add a place where you currently are
+      </button>
     </div>
 
     <b-modal :active.sync="isFilterModalActive">
@@ -127,6 +135,29 @@
       </div>
     </b-modal>
 
+    <div id="add-current-place-box" class="white-modal-box">
+      <h3 class="title is-4">Add Your Current Location?</h3>
+      <div class="field">
+        <label class="label">Place Name</label>
+        <div class="control">
+          <input
+            v-model="addingData.text"
+            class="input"
+            type="text"
+            size="30"
+            style="width: auto;"
+            placeholder="Starbucks"
+          />
+        </div>
+      </div>
+      <button
+        class="button is-product-color"
+        @click.prevent="saveCurrentLocation"
+      >
+        Add
+      </button>
+    </div>
+
     <b-modal :active.sync="isImageModalActive">
       <div id="model-box add-place-box">
         <h3 class="title has-text-centered" style="color: white;">
@@ -186,6 +217,7 @@ export default {
   middleware: ['setLoginUser'],
   data() {
     return {
+      map: null,
       isModalActive: false,
       isFilterModalActive: false,
       requestedCity: 'vancouver',
@@ -195,7 +227,8 @@ export default {
       isImageModalActive: false,
       showAddingPlaceButton: true,
       addingData: {
-        properties: {}
+        properties: {},
+        geometry: {}
       },
       marks: [],
       places: [],
@@ -205,8 +238,8 @@ export default {
           name: '🌳Vancouver',
           value: 'vancouver',
           coordinates: {
-            latitude: -123.1223953278889,
-            longitude: 49.28159210931116
+            longitude: -123.1223953278889,
+            latitude: 49.28159210931116
           },
           bbox: [
             -124.73377190858307,
@@ -219,8 +252,8 @@ export default {
           name: '🌁San Francisco',
           value: 'sanfrancisco',
           coordinates: {
-            latitude: -122.431297,
-            longitude: 37.773972
+            longitude: -122.431297,
+            latitude: 37.773972
           },
           bbox: [
             -123.30585393709464,
@@ -263,9 +296,9 @@ export default {
       error.statusCode = 404
       throw error
     }
-    const latitude = this.cities[this.requestedCity].coordinates.latitude
     const longitude = this.cities[this.requestedCity].coordinates.longitude
-    const map = this.createMap(latitude, longitude)
+    const latitude = this.cities[this.requestedCity].coordinates.latitude
+    this.map = this.createMap(longitude, latitude)
     // Get data from Firestore to add marks
     const places = await firestore
       .collection('places')
@@ -276,7 +309,7 @@ export default {
       this.places.push(doc.data())
     })
     this.marks.forEach(marker => {
-      this.addMarks(map, marker)
+      this.addMarks(this.map, marker)
     })
 
     // Check GPS
@@ -309,16 +342,56 @@ export default {
     twitterSignin() {
       firebase.auth().signInWithRedirect(twitterProvider)
     },
+    addCurrentLocation() {
+      // Check GPS
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+      const success = pos => {
+        const crd = pos.coords
+        const el = document.createElement('p')
+        el.setAttribute(
+          'style',
+          `width: 19px; height: 19px; background-color: #1da1f2; z-index: 300;
+          border-radius: 50%; border: 2px solid #ffffff;`
+        )
+        new mapboxgl.Marker({ element: el })
+          .setLngLat([crd.longitude, crd.latitude])
+          // .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
+          .addTo(this.map)
+        this.map.setCenter([crd.longitude, crd.latitude])
+        this.map.zoomTo(13)
+        const addCurrentPlaceBox = document.getElementById(
+          'add-current-place-box'
+        )
+        console.log(crd)
+        this.addingData.geometry.longitude = crd.longitude
+        this.addingData.geometry.latitude = crd.latitude
+        addCurrentPlaceBox.style.display = 'block'
+      }
+      function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`)
+        // User denied Geolocation
+        if (err.code === 1) {
+          alert(
+            'Location information is unavailable. Please check your browser setting and make sure it can uses GPS to get youer curent position.'
+          )
+        }
+      }
+      navigator.geolocation.getCurrentPosition(success, error, options)
+    },
     showFilterModal() {
       this.isFilterModalActive = true
     },
-    createMap(latitude, longitude) {
+    createMap(longitude, latitude) {
       mapboxgl.accessToken = this.mapBoxAccessToken
       const map = new mapboxgl.Map({
         container: 'map',
         // style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
         style: 'mapbox://styles/taishikato/cjw88gplb5f251cmncnerger7',
-        center: [latitude, longitude],
+        center: [longitude, latitude],
         zoom: 11
       })
       // Add geolocate control to the map.
@@ -386,8 +459,8 @@ export default {
     async changeFilter() {
       this.marks = []
       const map = this.createMap(
-        this.cities[this.requestedCity].coordinates.latitude,
-        this.cities[this.requestedCity].coordinates.longitude
+        this.cities[this.requestedCity].coordinates.longitude,
+        this.cities[this.requestedCity].coordinates.latitude
       )
       const placeData = []
       this.places.forEach(place => {
@@ -418,8 +491,8 @@ export default {
         name: this.addingData.text_en,
         address: this.addingData.properties.address || '',
         coordinates: {
-          latitude: this.addingData.geometry.coordinates[0],
-          longitude: this.addingData.geometry.coordinates[1]
+          longitude: this.addingData.geometry.coordinates[0],
+          latitude: this.addingData.geometry.coordinates[1]
         },
         city: this.requestedCity
       })
@@ -428,6 +501,27 @@ export default {
         type: 'is-success',
         duration: 3000
       })
+      this.$router.push(`/place/${id}`)
+    },
+    async saveCurrentLocation() {
+      const id = uuid()
+        .split('-')
+        .join('')
+      await this.saveOnFirestore(id, {
+        id,
+        name: this.addingData.text,
+        coordinates: {
+          latitude: this.addingData.geometry.latitude,
+          longitude: this.addingData.geometry.longitude
+        },
+        city: this.requestedCity
+      })
+      this.$toast.open({
+        message: 'Yes! Successfuly saved this place 😚',
+        type: 'is-success',
+        duration: 3000
+      })
+      // this.closeModel()
       this.$router.push(`/place/${id}`)
     },
     async saveOnFirestore(id, data) {
@@ -483,14 +577,14 @@ export default {
       if (res.size >= 5) {
         el.className = 'marker-popular'
       }
-      const latitude = marker.customCoordinates
-        ? marker.customCoordinates.latitude
-        : marker.coordinates.latitude
       const longitude = marker.customCoordinates
         ? marker.customCoordinates.longitude
         : marker.coordinates.longitude
+      const latitude = marker.customCoordinates
+        ? marker.customCoordinates.latitude
+        : marker.coordinates.latitude
       new mapboxgl.Marker({ element: el, offset: [0, 0] })
-        .setLngLat([latitude, longitude])
+        .setLngLat([longitude, latitude])
         .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
         .addTo(map)
     }
@@ -526,6 +620,16 @@ body {
     left: 50px;
     @include sp {
       left: 30px;
+    }
+  }
+  #add-current-location {
+    position: absolute;
+    right: 50px;
+    top: 60px;
+    color: #f1591f;
+    font-weight: 900;
+    @include sp {
+      top: 120px;
     }
   }
   #tag-filter-select {
@@ -580,5 +684,16 @@ body {
   .checkbox {
     margin-right: 10px;
   }
+}
+
+#add-current-place-box {
+  display: none;
+  bottom: 100px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 80%;
+  max-width: 500px;
 }
 </style>
