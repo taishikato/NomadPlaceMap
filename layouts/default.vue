@@ -60,6 +60,13 @@
             >
               By Taishi
             </a>
+            <a
+              href="https://docs.google.com/spreadsheets/d/1yAuSHtWgQXTz5v4xB8P4N_0xU8DymbesHgRtHewsazI/edit?usp=sharing"
+              class="navbar-item"
+              target="_blank"
+            >
+              Feedback List
+            </a>
             <!-- <div class="navbar-item">
               <a>
                 FeedBack

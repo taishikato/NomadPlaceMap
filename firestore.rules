@@ -1,11 +1,18 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    match /places/{place} {
+      allow read, write: if true;
+      match /likes/{like} {
+        allow read, write: if true;
+      }
+    }
     match /users/{userId} {
       allow write: if request.auth.uid == userId;
       allow read: if request.auth.uid != null;
-    }
-    match /places/{placeId} {
-      allow read, write;
+      match /likes/{like} {
+        allow write: if request.auth.uid == userId;
+        allow read: if request.auth.uid != null;
+      }
     }
   }
 }
