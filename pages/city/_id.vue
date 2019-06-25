@@ -33,7 +33,7 @@
 
       <button
         id="add-current-location"
-        class="button"
+        class="button nav-menu-enclosure"
         @click.prevent="addCurrentLocation"
       >
         Add a place where you currently are
@@ -132,11 +132,12 @@
     </b-modal>
 
     <div id="add-current-place-box" class="white-modal-box">
-      <h3 class="title">Add Your Current Location?</h3>
+      <h3 class="title is-4">Add Your Current Location?</h3>
       <div class="field">
         <label class="label">Place Name</label>
         <div class="control">
           <input
+            v-model="addingData.text"
             class="input"
             type="text"
             size="30"
@@ -145,7 +146,10 @@
           />
         </div>
       </div>
-      <button class="button google" @click.prevent="googleSignin">
+      <button
+        class="button is-product-color"
+        @click.prevent="saveCurrentLocation"
+      >
         Add
       </button>
     </div>
@@ -219,7 +223,8 @@ export default {
       isImageModalActive: false,
       showAddingPlaceButton: true,
       addingData: {
-        properties: {}
+        properties: {},
+        geometry: {}
       },
       marks: [],
       places: [],
@@ -229,8 +234,8 @@ export default {
           name: '🌳Vancouver',
           value: 'vancouver',
           coordinates: {
-            latitude: -123.1223953278889,
-            longitude: 49.28159210931116
+            longitude: -123.1223953278889,
+            latitude: 49.28159210931116
           },
           bbox: [
             -124.73377190858307,
@@ -243,8 +248,8 @@ export default {
           name: '🌁San Francisco',
           value: 'sanfrancisco',
           coordinates: {
-            latitude: -122.431297,
-            longitude: 37.773972
+            longitude: -122.431297,
+            latitude: 37.773972
           },
           bbox: [
             -123.30585393709464,
@@ -287,9 +292,9 @@ export default {
       error.statusCode = 404
       throw error
     }
-    const latitude = this.cities[this.requestedCity].coordinates.latitude
     const longitude = this.cities[this.requestedCity].coordinates.longitude
-    this.map = this.createMap(latitude, longitude)
+    const latitude = this.cities[this.requestedCity].coordinates.latitude
+    this.map = this.createMap(longitude, latitude)
     // Get data from Firestore to add marks
     const places = await firestore
       .collection('places')
@@ -357,6 +362,9 @@ export default {
         const addCurrentPlaceBox = document.getElementById(
           'add-current-place-box'
         )
+        console.log(crd)
+        this.addingData.geometry.longitude = crd.longitude
+        this.addingData.geometry.latitude = crd.latitude
         addCurrentPlaceBox.style.display = 'block'
       }
       function error(err) {
@@ -373,13 +381,13 @@ export default {
     showFilterModal() {
       this.isFilterModalActive = true
     },
-    createMap(latitude, longitude) {
+    createMap(longitude, latitude) {
       mapboxgl.accessToken = this.mapBoxAccessToken
       const map = new mapboxgl.Map({
         container: 'map',
         // style: 'mapbox://styles/taishikato/cjw7695834ftb1coxuvan7wfb',
         style: 'mapbox://styles/taishikato/cjw88gplb5f251cmncnerger7',
-        center: [latitude, longitude],
+        center: [longitude, latitude],
         zoom: 11
       })
       // Add geolocate control to the map.
@@ -447,8 +455,8 @@ export default {
     async changeFilter() {
       this.marks = []
       const map = this.createMap(
-        this.cities[this.requestedCity].coordinates.latitude,
-        this.cities[this.requestedCity].coordinates.longitude
+        this.cities[this.requestedCity].coordinates.longitude,
+        this.cities[this.requestedCity].coordinates.latitude
       )
       const placeData = []
       this.places.forEach(place => {
@@ -479,8 +487,8 @@ export default {
         name: this.addingData.text_en,
         address: this.addingData.properties.address || '',
         coordinates: {
-          latitude: this.addingData.geometry.coordinates[0],
-          longitude: this.addingData.geometry.coordinates[1]
+          longitude: this.addingData.geometry.coordinates[0],
+          latitude: this.addingData.geometry.coordinates[1]
         },
         city: this.requestedCity
       })
@@ -490,6 +498,27 @@ export default {
         duration: 3000
       })
       this.closeModel()
+    },
+    async saveCurrentLocation() {
+      const id = uuid()
+        .split('-')
+        .join('')
+      await this.saveOnFirestore(id, {
+        id,
+        name: this.addingData.text,
+        coordinates: {
+          latitude: this.addingData.geometry.latitude,
+          longitude: this.addingData.geometry.longitude
+        },
+        city: this.requestedCity
+      })
+      this.$toast.open({
+        message: 'Yes! Successfuly saved this place 😚',
+        type: 'is-success',
+        duration: 3000
+      })
+      // this.closeModel()
+      this.$router.push(`/place/${id}`)
     },
     async saveOnFirestore(id, data) {
       const created = getUnixTime()
@@ -544,14 +573,14 @@ export default {
       if (res.size >= 5) {
         el.className = 'marker-popular'
       }
-      const latitude = marker.customCoordinates
-        ? marker.customCoordinates.latitude
-        : marker.coordinates.latitude
       const longitude = marker.customCoordinates
         ? marker.customCoordinates.longitude
         : marker.coordinates.longitude
+      const latitude = marker.customCoordinates
+        ? marker.customCoordinates.latitude
+        : marker.coordinates.latitude
       new mapboxgl.Marker({ element: el, offset: [0, 0] })
-        .setLngLat([latitude, longitude])
+        .setLngLat([longitude, latitude])
         .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(popUpContent))
         .addTo(map)
     }
@@ -593,6 +622,11 @@ body {
     position: absolute;
     right: 50px;
     top: 60px;
+    color: #f1591f;
+    font-weight: 900;
+    @include sp {
+      top: 120px;
+    }
   }
   #tag-filter-select {
     left: 270px;
