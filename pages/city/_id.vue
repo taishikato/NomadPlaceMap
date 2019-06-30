@@ -1,43 +1,58 @@
 <template>
   <section>
-    <div id="map"></div>
-
-    <div id="top-nav">
-      <div id="city-select" class="select">
-        <select class="nav-menu-enclosure" @change="changeCity($event)">
-          <option
-            v-for="city in cities"
-            :key="city.name"
-            :value="city.value"
-            :selected="requestedCity === city.value"
-          >
-            {{ city.name }}
-          </option>
-        </select>
+    <div id="sidebar">
+      <div id="listings" class="list">
+        <div v-for="(place, index) in places" :key="place.id" class="list-item">
+          <a :id="`list-${index}`" @click.prevent="clickListItem(index)">
+            <p class="is-size-5 has-text-primary has-text-weight-semibold">
+              {{ place.name }}
+            </p>
+            <p class="is-size-6 has-text-grey-dark">{{ place.address }}</p>
+            <p class="is-size-7 has-text-grey-dark">Likes: {{ place.likes }}</p>
+          </a>
+        </div>
       </div>
+    </div>
+    <div id="map-content">
+      <div id="map"></div>
 
-      <div id="tag-filter-select">
-        <button class="button nav-menu-enclosure" @click="showFilterModal">
-          Tag Filter
+      <div id="top-nav">
+        <div id="city-select" class="select">
+          <select class="nav-menu-enclosure" @change="changeCity($event)">
+            <option
+              v-for="city in cities"
+              :key="city.name"
+              :value="city.value"
+              :selected="requestedCity === city.value"
+            >
+              {{ city.name }}
+            </option>
+          </select>
+        </div>
+
+        <div id="tag-filter-select">
+          <button class="button nav-menu-enclosure" @click="showFilterModal">
+            Tag Filter
+          </button>
+        </div>
+
+        <a
+          v-show="showAddingPlaceButton === true"
+          id="add-box-trigger"
+          class="button is-product-color is-outlined nav-menu-enclosure"
+          @click.prevent="clickAddingPlaceButton"
+        >
+          Add a place you like
+        </a>
+
+        <button
+          id="add-current-location"
+          class="button nav-menu-enclosure"
+          @click.prevent="addCurrentLocation"
+        >
+          Add a place where you currently are
         </button>
       </div>
-
-      <a
-        v-show="showAddingPlaceButton === true"
-        id="add-box-trigger"
-        class="button is-product-color is-outlined nav-menu-enclosure"
-        @click.prevent="clickAddingPlaceButton"
-      >
-        Add a place you like
-      </a>
-
-      <button
-        id="add-current-location"
-        class="button nav-menu-enclosure"
-        @click.prevent="addCurrentLocation"
-      >
-        Add a place where you currently are
-      </button>
     </div>
 
     <b-modal :active.sync="isFilterModalActive">
@@ -299,14 +314,26 @@ export default {
     const longitude = this.cities[this.requestedCity].coordinates.longitude
     const latitude = this.cities[this.requestedCity].coordinates.latitude
     this.map = this.createMap(longitude, latitude)
+
     // Get data from Firestore to add marks
     const places = await firestore
       .collection('places')
       .where('city', '==', this.requestedCity)
       .get()
-    await asyncForEach(places.docs, doc => {
-      this.marks.push(doc.data())
-      this.places.push(doc.data())
+
+    // let index = 0
+    await asyncForEach(places.docs, async doc => {
+      const docData = doc.data()
+      this.marks.push(docData)
+
+      // Get likes
+      const res = await firestore
+        .collection('places')
+        .doc(docData.id)
+        .collection('likes')
+        .get()
+      docData.likes = res.size
+      this.places.push(docData)
     })
     this.marks.forEach(marker => {
       this.addMarks(this.map, marker)
@@ -531,19 +558,89 @@ export default {
         .doc(id)
         .set(data)
     },
-    async addMarks(map, marker) {
-      const res = await firestore
-        .collection('places')
-        .doc(marker.id)
-        .collection('likes')
-        .get()
+    clickListItem(index) {
+      const activeItem = document.getElementsByClassName('active')
+      if (activeItem[0]) {
+        activeItem[0].classList.remove('active')
+      }
+      const selectedList = document.getElementById(`list-${index}`)
+      selectedList.parentNode.classList.add('active')
+
+      // Fly map
+      const clickedListing = this.places[index]
+      this.flyToStore(clickedListing)
+    },
+    // buildLocationList(data, index) {
+    //   console.log(data)
+    //   const listings = document.getElementById('listings')
+    //   const listing = listings.appendChild(document.createElement('div'))
+    //   listing.className = 'list-item'
+    //   listing.id = `listing-${index}`
+    //   // Create a new link with the class 'title' for each store
+    //   // and fill it with the store address
+    //   const link = listing.appendChild(document.createElement('a'))
+    //   link.href = '#'
+    //   link.className = 'title is-5'
+    //   link.dataPosition = index
+    //   link.innerHTML = data.name
+    //   // Add an event listener for the links in the sidebar listing
+    //   link.addEventListener('click', e => {
+    //     // Update the currentFeature to the store associated with the clicked link
+    //     const clickedListing = this.places[link.dataPosition]
+    //     // 1. Fly to the point associated with the clicked link
+    //     this.flyToStore(clickedListing, index)
+    //     // 2. Close all other popups and display popup for clicked store
+    //     // this.createPopUp(clickedListing, index)
+    //     // 3. Highlight listing in sidebar (and remove highlight for all other listings)
+    //     const activeItem = document.getElementsByClassName('active')
+    //     if (activeItem[0]) {
+    //       activeItem[0].classList.remove('active')
+    //     }
+    //     listing.classList.add('active')
+    //   })
+    //   // Create a new div with the class 'details' for each store
+    //   // and fill it with the city and phone number
+    //   const details = listing.appendChild(document.createElement('div'))
+    //   details.innerHTML = data.address
+    //   if (data.phone) {
+    //     details.innerHTML += ` · ${data.phoneFormatted}`
+    //   }
+    // },
+    flyToStore(currentFeature) {
+      this.map.flyTo({
+        center: [
+          currentFeature.coordinates.longitude,
+          currentFeature.coordinates.latitude
+        ],
+        zoom: 15
+      })
+    },
+    createPopUp(currentFeature) {
+      const popUps = document.getElementsByClassName('mapboxgl-popup')
+      // Check if there is already a popup on the map and if so, remove it
+      if (popUps[0]) popUps[0].remove()
+
+      const popup = new mapboxgl.Popup({ closeOnClick: false })
+        .setLngLat([
+          currentFeature.coordinates.longitude,
+          currentFeature.coordinates.latitude
+        ])
+        .setHTML(`<h3>Sweetgreen</h3><h4>${currentFeature.address}</h4>`)
+        .addTo(this.map)
+    },
+    addMarks(map, marker) {
+      // const res = await firestore
+      //   .collection('places')
+      //   .doc(marker.id)
+      //   .collection('likes')
+      //   .get()
       let popUpContent = `
       <h3 class="title is-6">${marker.name}</h3>
       <p class="subtitle is-7">${marker.address || ''}</p>
       <p><a href="../place/${marker.id}">Detail</a></p>
       `
-      if (res.size !== 0) {
-        popUpContent += `<p>${res.size} Likes</p>`
+      if (marker.likes !== 0) {
+        popUpContent += `<p>${marker.likes} Likes</p>`
       }
       const doc = new DOMParser().parseFromString(
         `<?xml version="1.0" encoding="utf-8"?>
@@ -574,7 +671,7 @@ export default {
       el.appendChild(el.ownerDocument.importNode(doc.documentElement, true))
       // const el = document.createElement('div').innerHTML =
       el.className = 'marker-normal'
-      if (res.size >= 5) {
+      if (marker.likes >= 5) {
         el.className = 'marker-popular'
       }
       const longitude = marker.customCoordinates
@@ -605,6 +702,42 @@ body {
   padding: 0;
 }
 
+$sidebarWidth: 40%;
+$mapContentHeightSp: 600px;
+#sidebar {
+  position: absolute;
+  width: $sidebarWidth;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: scroll;
+  @include sp {
+    top: $mapContentHeightSp;
+    width: 100vw;
+    overflow: visible;
+  }
+}
+
+#map-content {
+  position: relative;
+  left: $sidebarWidth;
+  width: calc(100% - #{$sidebarWidth});
+  height: 100vh;
+  top: 0;
+  bottom: 0;
+  #map {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+  }
+  @include sp {
+    width: 100vw;
+    height: $mapContentHeightSp;
+    left: 0;
+  }
+}
 #top-nav {
   position: relative;
   top: 60px;
@@ -658,12 +791,6 @@ body {
   background-color: white;
 }
 
-#map {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-}
 .container {
   height: 100%;
 }
@@ -695,5 +822,19 @@ body {
   margin: auto;
   width: 80%;
   max-width: 500px;
+}
+
+#listings {
+  padding-bottom: 54px;
+}
+.list-item {
+  a {
+    display: block;
+    cursor: pointer;
+  }
+}
+
+.list-item.active {
+  background-color: #f8f8f8;
 }
 </style>
