@@ -171,7 +171,7 @@ $currentPositionBtn: 60px;
 .mapboxgl-ctrl.mapboxgl-ctrl-group {
     box-shadow: none;
     position: absolute;
-    top: 130px;
+    top: 170px;
     right: 0px;
     border-radius: 50%;
     width: $currentPositionBtn;
@@ -200,5 +200,9 @@ $currentPositionBtn: 60px;
   
 .flex-center {
     align-items: center;
+}
+
+.list-item.active {
+    background-color: #f8f8f8;
 }
   
