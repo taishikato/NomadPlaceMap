@@ -370,6 +370,10 @@ export default {
       firebase.auth().signInWithRedirect(twitterProvider)
     },
     addCurrentLocation() {
+      const addCurrentLocationBtn = document.getElementById(
+        'add-current-location'
+      )
+      addCurrentLocationBtn.classList.add('is-loading')
       // Check GPS
       const options = {
         enableHighAccuracy: true,
@@ -393,12 +397,19 @@ export default {
         const addCurrentPlaceBox = document.getElementById(
           'add-current-place-box'
         )
-        console.log(crd)
         this.addingData.geometry.longitude = crd.longitude
         this.addingData.geometry.latitude = crd.latitude
         addCurrentPlaceBox.style.display = 'block'
+
+        addCurrentLocationBtn.classList.remove('is-loading')
       }
       function error(err) {
+        addCurrentLocationBtn.classList.remove('is-loading')
+        this.$toast.open({
+          message: 'Faild to get your current location. Please try again.',
+          type: 'is-danger',
+          duration: 3000
+        })
         console.warn(`ERROR(${err.code}): ${err.message}`)
         // User denied Geolocation
         if (err.code === 1) {
