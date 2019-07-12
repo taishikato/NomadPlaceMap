@@ -1,55 +1,178 @@
 <template>
-  <div>
-    <nuxt />
+  <div class="layout-container">
+    <nuxt style="z-index: 100;" />
+
+    <b-modal :active.sync="isModalActive" class="narrow-modal">
+      <div id="model-box" class="loginBtn has-text-centered">
+        <h3 class="title">NomadPlaceMap</h3>
+        <button class="button google" @click.prevent="googleSignin">
+          Google
+        </button>
+        <button class="button facebook" @click.prevent="facebookSignin">
+          FaceBook
+        </button>
+        <button class="button twitter" @click.prevent="twitterSignin">
+          Twitter
+        </button>
+      </div>
+    </b-modal>
+
+    <nav
+      class="navbar is-fixed-bottom"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="container">
+        <div class="navbar-brand">
+          <n-link class="navbar-item" to="/">
+            👩‍💻👨‍💻
+          </n-link>
+          <a
+            v-if="$store.getters.getLoginStatus === false"
+            class="navbar-item"
+            @click.prevent="showModal"
+          >
+            Sign Up / Log In
+          </a>
+          <a
+            role="button"
+            class="navbar-burger"
+            aria-label="menu"
+            aria-expanded="false"
+            @click.prevent="toggleBurger"
+          >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
+        </div>
+        <div id="nabvar-top" class="navbar-menu is-mobile">
+          <div v-if="$store.getters.getLoginStatus" class="navbar-start">
+            <div class="navbar-item">
+              <a @click.prevent="logout">Log Out</a>
+            </div>
+          </div>
+          <div class="navbar-end">
+            <a
+              href="https://taishikato.com/?ref=hangoutmap"
+              class="navbar-item"
+              target="_blank"
+            >
+              By Taishi
+            </a>
+            <a
+              href="https://docs.google.com/spreadsheets/d/1yAuSHtWgQXTz5v4xB8P4N_0xU8DymbesHgRtHewsazI/edit?usp=sharing"
+              class="navbar-item"
+              target="_blank"
+            >
+              Feedback List
+            </a>
+            <!-- <div class="navbar-item">
+              <a>
+                FeedBack
+              </a>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </nav>
   </div>
 </template>
 
-<style>
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
+<script>
+/* eslint-disable no-console */
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-  margin: 0;
-}
+import twemoji from 'twemoji'
+import firebase from '~/plugins/firebase'
 
-.button--green {
-  display: inline-block;
+const googleProvider = new firebase.auth.GoogleAuthProvider()
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
+const twitterProvider = new firebase.auth.TwitterAuthProvider()
+
+export default {
+  middleware: ['setLoginUser'],
+  data() {
+    return {
+      searchQuery: '',
+      isModalActive: false
+    }
+  },
+  mounted() {
+    twemoji.parse(document.body)
+  },
+  methods: {
+    googleSignin() {
+      firebase.auth().signInWithRedirect(googleProvider)
+    },
+    facebookSignin() {
+      firebase.auth().signInWithRedirect(facebookProvider)
+    },
+    twitterSignin() {
+      firebase.auth().signInWithRedirect(twitterProvider)
+    },
+    showModal() {
+      this.isModalActive = true
+    },
+    loginWithFacebook() {
+      console.log('loginWithFacebook')
+    },
+    loginWithTwitter() {
+      console.log('loginWithTwitter')
+    },
+    toggleBurger() {
+      const burgerIcon = document.querySelector('.navbar-burger')
+      const dropMenu = document.getElementById('nabvar-top')
+      burgerIcon.classList.toggle('is-active')
+      dropMenu.classList.toggle('is-active')
+    },
+    async logout() {
+      // Logout
+      try {
+        await firebase.auth().signOut()
+        // Firestoreとアンバインド
+        await this.$store.dispatch('UNBIND_USER')
+        // CommitでVuexの値を変更
+        this.$store.commit('changeUser', {
+          user: {}
+        })
+        this.$store.commit('changeLoginStatus', {
+          status: false
+        })
+        location.reload()
+      } catch (err) {
+        this.$toast.open({
+          message: 'Failed to Log Out… Please try again later',
+          type: 'is-danger',
+          duration: 3000
+        })
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.title.brand {
+  height: 50px;
+  font-size: 30px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  z-index: 200;
+  background-color: white;
+  padding: 10px;
   border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
+  background-color: hsl(348, 100%, 61%);
+  a {
+    font-weight: 900;
+    &:hover {
+      color: #fff;
+    }
+  }
 }
 
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
-
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
-}
-
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
+#makerwidget {
+  z-index: 200;
 }
 </style>

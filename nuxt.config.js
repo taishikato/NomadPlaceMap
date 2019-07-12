@@ -7,13 +7,38 @@ export default {
    ** Headers of the page
    */
   head: {
-    title: pkg.name,
+    htmlAttrs: {
+      lang: 'en'
+    },
+    title:
+      'Where to work around the world | Work places map for Nomad by NomadPlaceMap',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
+      { hid: 'description', name: 'description', content: pkg.description },
+      {
+        hid: 'og:image',
+        property: 'og:image',
+        content: 'https://nomadplacemap.com/ogimage.png'
+      }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href: 'https://api.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css'
+      },
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap'
+      }
+    ]
   },
 
   /*
@@ -24,7 +49,7 @@ export default {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ['@/assets/css/bulma', '@/assets/css/main'],
 
   /*
    ** Plugins to load before mounting the App
@@ -34,7 +59,16 @@ export default {
   /*
    ** Nuxt.js modules
    */
-  modules: ['@nuxtjs/pwa'],
+  modules: [
+    'nuxt-buefy',
+    '@nuxtjs/pwa',
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: 'UA-27648393-22'
+      }
+    ]
+  ],
 
   /*
    ** Build configuration
