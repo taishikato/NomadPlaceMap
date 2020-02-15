@@ -6,7 +6,7 @@ $sp: 767px;
 }
 
 * {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', sans-serif !important;
 }
 
 html,
@@ -60,10 +60,9 @@ $enclosure: 2px solid #e8e0e0 !important;
     .mapboxgl-ctrl-top-right {
         right: 40px;
         width: 300px;
-        top: 50px;
         @include sp {
             position: absolute;
-            top: 110px;
+            top: 70px;
             left: 50px;
           }
         .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {

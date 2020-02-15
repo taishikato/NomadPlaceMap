@@ -714,7 +714,7 @@ body {
 }
 
 $sidebarWidth: 40%;
-$mapContentHeightSp: 500px;
+$mapContentHeightSp: 600px;
 #sidebar {
   position: absolute;
   width: $sidebarWidth;
