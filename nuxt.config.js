@@ -60,6 +60,7 @@ export default {
    ** Nuxt.js modules
    */
   modules: [
+    '@nuxtjs/dotenv',
     'nuxt-buefy',
     '@nuxtjs/pwa',
     [
